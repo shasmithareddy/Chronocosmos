@@ -85,6 +85,7 @@ chronocosmos/
     <li>CSS animations, dynamic content</li>
   </ul>
 
+
   <h2>📦 𝐈𝐧𝐬𝐭𝐚𝐥𝐥𝐚𝐭𝐢𝐨𝐧 / 𝐒𝐞𝐭𝐮𝐩</h2>
   <pre><code>
 git clone https://github.com/shasmithareddy/Chronocosmos.git
