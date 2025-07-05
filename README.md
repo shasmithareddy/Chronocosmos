@@ -103,6 +103,21 @@ cd chronocosmos
     <li>✔ Clickable Altair-Vega star-crossed love story</li>
   </ul>
 
+  <h2>📸 𝐏𝐫𝐨𝐣𝐞𝐜𝐭 𝐒𝐜𝐫𝐞𝐞𝐧𝐬𝐡𝐨𝐭𝐬</h2>
+<p>Here’s a glimpse into Chronocosmos in action:</p>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+  <div><img src="home.png" alt="Homepage" style="width: 100%; border-radius: 12px;"></div>
+  <div><img src="trivia.png" alt="trivia" style="width: 100%; border-radius: 12px;"></div>
+  <div><img src="lunar lens.png" alt="Lunar Lens" style="width: 100%; border-radius: 12px;"></div>
+  <div><img src="zodiac.png" alt="ChronoZodiac Spinwheel" style="width: 100%; border-radius: 12px;"></div>
+  <div><img src="altairvegalink.png" alt="Altair & Vega" style="width: 100%; border-radius: 12px;"></div>
+   <div><img src="avanimation.png" alt="Altair & Vega" style="width: 100%; border-radius: 12px;"></div>
+  <div><img src="apod.png" alt="Celestial Gallery" style="width: 100%; border-radius: 12px;"></div>
+  <div><img src="metric.png" alt="Orbital Metrics" style="width: 100%; border-radius: 12px;"></div>
+</div>
+
+
   <h2>⚠️ 𝐊𝐧𝐨𝐰𝐧 𝐋𝐢𝐦𝐢𝐭𝐚𝐭𝐢𝐨𝐧𝐬</h2>
   <ul>
     <li>APOD fetch needs internet</li>
