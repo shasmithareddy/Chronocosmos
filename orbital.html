@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Orbital Metrics</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #0a1026;
+      color: #fff;
+      overflow-x: hidden;
+      position: relative;
+    }
+    .stars-bg {
+      position: fixed;
+      width: 100vw;
+      height: 100vh;
+      top: 0; left: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .orbital-metrics {
+      position: relative;
+      z-index: 1;
+      max-width: 700px;
+      margin: 3em auto 2em auto;
+      background: rgba(20, 24, 48, 0.97);
+      border-radius: 18px;
+      box-shadow: 0 0 40px 10px #1a1e33, 0 0 0 1px #2e3a6b;
+      padding: 2em 1.5em 2.5em 1.5em;
+      text-align: center;
+      overflow: hidden;
+    }
+    .orbital-metrics h1 {
+      font-family: 'Orbitron', 'Segoe UI', Arial, sans-serif;
+      font-size: 2em;
+      letter-spacing: 0.08em;
+      color: #aee7ff;
+      text-shadow: 0 0 8px #00eaff, 0 0 24px #0ff;
+      margin-bottom: 0.7em;
+    }
+    .input-section {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2em;
+      margin-bottom: 2em;
+    }
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      min-width: 140px;
+    }
+    .input-group label {
+      font-size: 1em;
+      color: #b3cfff;
+      text-shadow: 0 0 4px #0ff4;
+      margin-bottom: 0.3em;
+    }
+    .input-group input {
+      background: #1a223a;
+      color: #fff;
+      border: 1px solid #3a4a7a;
+      border-radius: 6px;
+      padding: 0.5em 0.8em;
+      font-size: 1em;
+      outline: none;
+      box-shadow: 0 0 6px #0ff2;
+      transition: border 0.2s;
+      width: 100%;
+    }
+    .input-actions {
+      display: flex;
+      gap: 1em;
+      margin-top: 1.2em;
+      justify-content: center;
+    }
+    .input-actions button {
+      padding: 0.5em 1.3em;
+      border: none;
+      border-radius: 6px;
+      background: #4f5b93;
+      color: #fff;
+      font-size: 1em;
+      cursor: pointer;
+      box-shadow: 0 0 8px #00eaff;
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+    .input-actions button:hover {
+      background: #6c7ac9;
+      box-shadow: 0 0 16px #00eaff;
+    }
+    .error-message {
+      color: #ffb3b3;
+      background: #2a0a1a;
+      border: 1px solid #ff3a6b;
+      border-radius: 8px;
+      padding: 0.7em 1em;
+      margin: 1em auto 0 auto;
+      text-shadow: 0 0 4px #ff3a6b;
+      max-width: 350px;
+    }
+    .planet-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 1.3em;
+      margin-top: 2em;
+      margin-bottom: 1em;
+    }
+    .planet-card {
+      background: rgba(10, 20, 40, 0.7);
+      border-radius: 14px;
+      box-shadow: 0 0 16px #0ff4, 0 0 0 1px #2e3a6b;
+      padding: 1.2em 0.7em 1.2em 0.7em;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.15s;
+      min-height: 180px;
+    }
+    .planet-card:hover {
+      transform: translateY(-6px) scale(1.03);
+      box-shadow: 0 0 32px #0ff8, 0 0 0 2px #2e3a6b;
+    }
+    .planet-icon {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 0.5em;
+      filter: drop-shadow(0 0 8px #0ff8);
+    }
+    .planet-name {
+      font-size: 1.1em;
+      font-weight: bold;
+      color: #aee7ff;
+      text-shadow: 0 0 8px #0ff, 0 0 16px #0ff6;
+      margin-bottom: 0.5em;
+      letter-spacing: 0.04em;
+    }
+    .planet-metric {
+      font-size: 1em;
+      color: #fff;
+      margin-bottom: 0.2em;
+      text-shadow: 0 0 4px #0ff2;
+    }
+    .planet-metric span {
+      color: #aee7ff;
+      font-weight: bold;
+    }
+    @media (max-width: 700px) {
+      .orbital-metrics {
+        max-width: 98vw;
+        padding: 1em 0.5em 1.5em 0.5em;
+      }
+      .planet-grid {
+        gap: 0.7em;
+      }
+      .planet-card {
+        min-height: 150px;
+        padding: 1em 0.5em;
+      }
+    }
+    @media (max-width: 480px) {
+      .orbital-metrics h1 {
+        font-size: 1.2em;
+      }
+      .planet-card {
+        min-height: 120px;
+        padding: 0.7em 0.3em;
+      }
+      .planet-icon {
+        width: 36px;
+        height: 36px;
+      }
+      .planet-name {
+        font-size: 1em;
+      }
+      .planet-metric {
+        font-size: 0.97em;
+      }
+    }
+  </style>
+  <!-- Google Fonts for Orbitron (optional, for a sci-fi look) -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <canvas class="stars-bg"></canvas>
+  <section class="orbital-metrics">
+    <h1>🪐 Orbital Metrics</h1>
+    <form id="metrics-form" autocomplete="off" novalidate>
+      <div class="input-section">
+        <div class="input-group">
+          <label for="earth-age">Earth Age (years):</label>
+          <input type="number" id="earth-age" min="0" step="0.01" placeholder="e.g. 25" required>
+        </div>
+        <div class="input-group">
+          <label for="earth-weight">Earth Weight (kg):</label>
+          <input type="number" id="earth-weight" min="0" step="0.01" placeholder="e.g. 70" required>
+        </div>
+      </div>
+      <div class="input-actions">
+        <button type="submit">Calculate</button>
+        <button type="button" id="reset-btn">Reset</button>
+      </div>
+      <div id="error-message" class="error-message" style="display:none;"></div>
+    </form>
+    <div id="planet-results" class="planet-grid"></div>
+  </section>
+<script>
+  function initOrbitalMetrics() {
+    // Starry background animation
+    const canvas = document.querySelector('.stars-bg');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+
+    function resizeStars() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      stars = [];
+      for (let i = 0; i < 120; i++) {
+        stars.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          r: Math.random() * 1.2 + 0.3,
+          o: Math.random() * 0.7 + 0.3,
+          d: Math.random() * 2 * Math.PI,
+          s: Math.random() * 0.5 + 0.1
+        });
+      }
+    }
+
+    function drawStars() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let star of stars) {
+        ctx.save();
+        ctx.globalAlpha = star.o + 0.3 * Math.sin(Date.now() / 900 + star.d);
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.r, 0, 2 * Math.PI);
+        ctx.fillStyle = "#aee7ff";
+        ctx.shadowColor = "#00eaff";
+        ctx.shadowBlur = 8;
+        ctx.fill();
+        ctx.restore();
+      }
+      requestAnimationFrame(drawStars);
+    }
+
+    window.addEventListener('resize', resizeStars);
+    resizeStars();
+    drawStars();
+
+    const planets = [
+      {
+        name: "Mercury",
+        period: 0.2408467,
+        gravity: 0.378,
+        icon: `<svg class="planet-icon" viewBox="0 0 64 64"><circle cx="32" cy="32" r="18" fill="#b1b1b1"/><circle cx="32" cy="32" r="14" fill="#e3e3e3" opacity="0.3"/></svg>`
+      },
+      {
+        name: "Venus",
+        period: 0.61519726,
+        gravity: 0.907,
+        icon: `<svg class="planet-icon" viewBox="0 0 64 64"><circle cx="32" cy="32" r="18" fill="#e6c97a"/><circle cx="32" cy="32" r="14" fill="#fffbe6" opacity="0.3"/></svg>`
+      },
+      {
+        name: "Mars",
+        period: 1.8808158,
+        gravity: 0.377,
+        icon: `<svg class="planet-icon" viewBox="0 0 64 64"><circle cx="32" cy="32" r="18" fill="#c1440e"/><circle cx="32" cy="32" r="14" fill="#ffb380" opacity="0.3"/></svg>`
+      },
+      {
+        name: "Jupiter",
+        period: 11.862615,
+        gravity: 2.36,
+        icon: `<svg class="planet-icon" viewBox="0 0 64 64"><circle cx="32" cy="32" r="18" fill="#e3c28b"/><ellipse cx="32" cy="38" rx="14" ry="6" fill="#fffbe6" opacity="0.3"/></svg>`
+      },
+      {
+        name: "Saturn",
+        period: 29.447498,
+        gravity: 0.916,
+        icon: `<svg class="planet-icon" viewBox="0 0 64 64"><ellipse cx="32" cy="32" rx="18" ry="14" fill="#e7d8a1"/><ellipse cx="32" cy="32" rx="24" ry="4" fill="#fffbe6" opacity="0.3"/></svg>`
+      },
+      {
+        name: "Uranus",
+        period: 84.016846,
+        gravity: 0.889,
+        icon: `<svg class="planet-icon" viewBox="0 0 64 64"><circle cx="32" cy="32" r="18" fill="#7ad6e6"/><ellipse cx="32" cy="32" rx="22" ry="6" fill="#fff" opacity="0.2"/></svg>`
+      },
+      {
+        name: "Neptune",
+        period: 164.79132,
+        gravity: 1.12,
+        icon: `<svg class="planet-icon" viewBox="0 0 64 64"><circle cx="32" cy="32" r="18" fill="#3b5be6"/><ellipse cx="32" cy="36" rx="14" ry="5" fill="#fff" opacity="0.2"/></svg>`
+      }
+    ];
+
+    const form = document.getElementById('metrics-form');
+    const ageInput = document.getElementById('earth-age');
+    const weightInput = document.getElementById('earth-weight');
+    const errorDiv = document.getElementById('error-message');
+    const resultsDiv = document.getElementById('planet-results');
+    const resetBtn = document.getElementById('reset-btn');
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      errorDiv.style.display = "none";
+      resultsDiv.innerHTML = "";
+      const age = parseFloat(ageInput.value);
+      const weight = parseFloat(weightInput.value);
+
+      if (isNaN(age) || age <= 0) {
+        showError("Please enter a valid, positive Earth age.");
+        return;
+      }
+      if (isNaN(weight) || weight <= 0) {
+        showError("Please enter a valid, positive Earth weight.");
+        return;
+      }
+
+      let html = "";
+      planets.forEach(planet => {
+        const planetAge = (age / planet.period).toFixed(2);
+        const planetWeight = (weight * planet.gravity).toFixed(2);
+        html += `
+          <div class="planet-card">
+            ${planet.icon}
+            <div class="planet-name">${planet.name}</div>
+            <div class="planet-metric">Age: <span>${planetAge}</span> years</div>
+            <div class="planet-metric">Weight: <span>${planetWeight}</span> kg</div>
+          </div>
+        `;
+      });
+      resultsDiv.innerHTML = html;
+    });
+
+    resetBtn.addEventListener('click', function () {
+      ageInput.value = "";
+      weightInput.value = "";
+      errorDiv.style.display = "none";
+      resultsDiv.innerHTML = "";
+      ageInput.focus();
+    });
+
+    function showError(msg) {
+      errorDiv.textContent = "🚫 " + msg;
+      errorDiv.style.display = "block";
+    }
+  }
+
+  // If this is loaded standalone, initialize directly
+  if (document.querySelector('.orbital-metrics')) {
+    initOrbitalMetrics();
+  }
+</script>
+
+</body>
+</html>

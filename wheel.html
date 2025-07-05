@@ -1,0 +1,454 @@
+<!-- Starry background for this section only -->
+<canvas class="stars-bg"></canvas>
+
+<style>
+/* Cosmic theme for ChronoZodiac */
+.stars-bg {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  top: 0; left: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.chrono-section h2 {
+  font-family: 'Orbitron', 'Exo', Arial, sans-serif;
+  font-size: 2em;
+  letter-spacing: 0.08em;
+  color: #aee7ff;
+  text-shadow: 0 0 8px #00eaff, 0 0 24px #0ff;
+  margin-top: 1.2em;
+  margin-bottom: 0.7em;
+  text-align: center;
+}
+#wheel-container {
+  position: relative;
+  width: 500px;
+  height: 500px;
+  margin: 40px auto;
+  z-index: 1;
+  background: rgba(20, 24, 48, 0.97);
+  border-radius: 50%;
+  box-shadow: 0 0 40px 10px #1a1e33, 0 0 0 1px #2e3a6b;
+  overflow: visible;
+}
+#wheel {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: 0 0 40px #0ff4 inset;
+  position: relative;
+  overflow: visible;
+}
+#center-circle {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 180px;
+  height: 180px;
+  margin-left: -90px;
+  margin-top: -90px;
+  background: linear-gradient(135deg, #23294a 70%, #0a1026 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5em;
+  font-weight: bold;
+  box-shadow: 0 0 24px #aee7ff, 0 0 0 2px #2e3a6b;
+  z-index: 2;
+  flex-direction: column;
+  color: #aee7ff;
+  text-shadow: 0 0 8px #00eaff, 0 0 16px #0ff;
+  border: 2px solid #3f51b5;
+}
+#selected-date {
+  font-size: 1.1em;
+  margin-bottom: 0.5em;
+  color: #fff;
+  text-shadow: 0 0 8px #aee7ff;
+}
+#zodiac-sign {
+  font-size: 1.1em;
+  margin-top: 10px;
+  color: #ffe082;
+  text-shadow: 0 0 8px #ff9800, 0 0 16px #ff9800;
+}
+#controls {
+  margin: 20px auto 0 auto;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  z-index: 2;
+}
+label {
+  font-size: 1.1em;
+  color: #b3cfff;
+  text-shadow: 0 0 4px #0ff4;
+}
+select {
+  font-size: 1.1em;
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 1px solid #3a4a7a;
+  background: #1a223a;
+  color: #fff;
+  box-shadow: 0 0 6px #0ff2;
+  margin-left: 0.5em;
+  outline: none;
+  transition: border 0.2s;
+}
+#timeline {
+  width: 90%;
+  max-width: 600px;
+  margin: 30px auto 0 auto;
+  background: rgba(20, 24, 48, 0.97);
+  border-radius: 14px;
+  box-shadow: 0 0 24px #0ff4, 0 0 0 1px #2e3a6b;
+  padding: 24px 20px 20px 20px;
+  text-align: left;
+  z-index: 1;
+  position: relative;
+  color: #e0eaff;
+}
+#timeline h3 {
+  margin-top: 0;
+  color: #aee7ff;
+  font-family: 'Orbitron', 'Exo', Arial, sans-serif;
+  text-shadow: 0 0 8px #00eaff;
+  letter-spacing: 0.04em;
+}
+.event {
+  margin-bottom: 18px;
+  padding-left: 10px;
+  border-left: 3px solid #ff9800;
+  background: rgba(255,255,255,0.02);
+  border-radius: 4px;
+  box-shadow: 0 0 8px #ff980044;
+}
+.event-year {
+  font-weight: bold;
+  color: #ff9800;
+  margin-right: 8px;
+  text-shadow: 0 0 6px #ff9800;
+}
+.no-events {
+  color: #888;
+  font-style: italic;
+  text-shadow: 0 0 4px #fff2;
+}
+@media (max-width: 700px) {
+  #wheel-container {
+    width: 98vw;
+    height: 98vw;
+    min-width: 260px;
+    min-height: 260px;
+    max-width: 98vw;
+    max-height: 98vw;
+  }
+  #wheel {
+    width: 100%;
+    height: 100%;
+  }
+  #center-circle {
+    width: 34vw;
+    height: 34vw;
+    min-width: 90px;
+    min-height: 90px;
+    margin-left: -17vw;
+    margin-top: -17vw;
+    font-size: 1em;
+  }
+}
+@media (max-width: 480px) {
+  #timeline {
+    padding: 12px 4vw 12px 4vw;
+  }
+  #controls {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+</style>
+
+<div class="chrono-section">
+  <h2>ChronoZodiac</h2>
+  <div id="controls">
+    <label>
+      Month:
+      <select id="month-select"></select>
+    </label>
+    <label>
+      Date:
+      <select id="date-select"></select>
+    </label>
+  </div>
+  <div id="wheel-container">
+    <canvas id="wheel" width="500" height="500"></canvas>
+    <div id="center-circle">
+      <div id="selected-date">--</div>
+      <div id="zodiac-sign" style="font-size:0.8em; margin-top:10px;">Zodiac: --</div>
+    </div>
+  </div>
+  <div id="timeline">
+    <h3>Astral Events Timeline</h3>
+    <div id="events-list"></div>
+  </div>
+</div>
+
+<script>
+function initChronoZodiac() {
+// Starry background animation (scoped to this page)
+(function() {
+  let canvasBg = document.querySelector('.stars-bg');
+  if (!canvasBg) {
+    canvasBg = document.createElement('canvas');
+    canvasBg.className = 'stars-bg';
+    document.body.appendChild(canvasBg);
+  }
+  const ctxBg = canvasBg.getContext('2d');
+  let stars = [];
+  function resizeStars() {
+    canvasBg.width = window.innerWidth;
+    canvasBg.height = window.innerHeight;
+    stars = [];
+    for (let i = 0; i < 120; i++) {
+      stars.push({
+        x: Math.random() * canvasBg.width,
+        y: Math.random() * canvasBg.height,
+        r: Math.random() * 1.2 + 0.3,
+        o: Math.random() * 0.7 + 0.3,
+        d: Math.random() * 2 * Math.PI,
+        s: Math.random() * 0.5 + 0.1
+      });
+    }
+  }
+  function drawStars() {
+    ctxBg.clearRect(0, 0, canvasBg.width, canvasBg.height);
+    for (let star of stars) {
+      ctxBg.save();
+      ctxBg.globalAlpha = star.o + 0.3 * Math.sin(Date.now()/900 + star.d);
+      ctxBg.beginPath();
+      ctxBg.arc(star.x, star.y, star.r, 0, 2 * Math.PI);
+      ctxBg.fillStyle = "#aee7ff";
+      ctxBg.shadowColor = "#00eaff";
+      ctxBg.shadowBlur = 8;
+      ctxBg.fill();
+      ctxBg.restore();
+    }
+    requestAnimationFrame(drawStars);
+  }
+  window.addEventListener('resize', resizeStars);
+  resizeStars();
+  drawStars();
+})();
+
+// Zodiac sign calculation
+function getZodiac(month, day) {
+  const zodiac = [
+    { sign: "Capricorn", from: [1, 1], to: [1, 19] },
+    { sign: "Aquarius", from: [1, 20], to: [2, 18] },
+    { sign: "Pisces", from: [2, 19], to: [3, 20] },
+    { sign: "Aries", from: [3, 21], to: [4, 19] },
+    { sign: "Taurus", from: [4, 20], to: [5, 20] },
+    { sign: "Gemini", from: [5, 21], to: [6, 20] },
+    { sign: "Cancer", from: [6, 21], to: [7, 22] },
+    { sign: "Leo", from: [7, 23], to: [8, 22] },
+    { sign: "Virgo", from: [8, 23], to: [9, 22] },
+    { sign: "Libra", from: [9, 23], to: [10, 22] },
+    { sign: "Scorpio", from: [10, 23], to: [11, 21] },
+    { sign: "Sagittarius", from: [11, 22], to: [12, 21] },
+    { sign: "Capricorn", from: [12, 22], to: [12, 31] }
+  ];
+  for (let z of zodiac) {
+    let [fromM, fromD] = z.from;
+    let [toM, toD] = z.to;
+    if (
+      (month === fromM && day >= fromD) ||
+      (month === toM && day <= toD) ||
+      (fromM > toM && ((month === fromM && day >= fromD) || (month === toM && day <= toD)))
+    ) {
+      return z.sign;
+    }
+  }
+  return "--";
+}
+
+// Sample astral events data
+const astralEvents = {
+  "01-01": [
+    { year: 1801, desc: "Discovery of the first asteroid, Ceres, by Giuseppe Piazzi." },
+    { year: 2001, desc: "Launch of NASA's Genesis spacecraft to collect solar wind samples." }
+  ],
+  "07-20": [
+    { year: 1969, desc: "Apollo 11: Neil Armstrong and Buzz Aldrin become the first humans to walk on the Moon." }
+  ],
+  "02-19": [
+    { year: 1473, desc: "Birth of Nicolaus Copernicus, who formulated a heliocentric model of the universe." }
+  ],
+  "12-14": [
+    { year: 1972, desc: "Apollo 17: Last humans (Eugene Cernan and Harrison Schmitt) walk on the Moon." }
+  ],
+  "08-21": [
+    { year: 2017, desc: "Great American Solar Eclipse: Total solar eclipse visible across the USA." }
+  ],
+  "04-12": [
+    { year: 1961, desc: "Yuri Gagarin becomes the first human in space (Vostok 1)." }
+  ],
+  "06-30": [
+    { year: 1908, desc: "Tunguska event: A large explosion caused by an asteroid or comet in Siberia." }
+  ],
+  // Add more events as desired
+};
+
+// Wheel drawing
+const months = [
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+];
+const daysInMonth = [31,28,31,30,31,30,31,31,30,31,30,31];
+
+const canvas = document.getElementById('wheel');
+const ctx = canvas.getContext('2d');
+const centerX = 250, centerY = 250;
+const innerRadius = 90;
+const outerRadius = 220;
+const monthRadius = 140;
+
+function drawWheel(selectedMonth = null, selectedDate = null) {
+  ctx.clearRect(0, 0, 500, 500);
+
+  // Draw outer circle (dates)
+  for (let i = 0; i < 31; i++) {
+    let angle = (2 * Math.PI / 31) * i - Math.PI/2;
+    let nextAngle = (2 * Math.PI / 31) * (i+1) - Math.PI/2;
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY);
+    ctx.arc(centerX, centerY, outerRadius, angle, nextAngle, false);
+    ctx.closePath();
+    ctx.fillStyle = (selectedDate === i+1) ? "#ffe082" : (i % 2 === 0 ? "#2e3a6b" : "#1a223a");
+    ctx.shadowColor = (selectedDate === i+1) ? "#ffe082" : "#00eaff";
+    ctx.shadowBlur = (selectedDate === i+1) ? 24 : 8;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // Draw date text
+    let textAngle = angle + (nextAngle - angle)/2;
+    let tx = centerX + Math.cos(textAngle) * (outerRadius - 20);
+    let ty = centerY + Math.sin(textAngle) * (outerRadius - 20);
+    ctx.save();
+    ctx.translate(tx, ty);
+    ctx.rotate(textAngle + Math.PI/2);
+    ctx.font = "bold 14px Orbitron, Arial";
+    ctx.fillStyle = (selectedDate === i+1) ? "#23294a" : "#aee7ff";
+    ctx.textAlign = "center";
+    ctx.fillText(i+1, 0, 0);
+    ctx.restore();
+  }
+
+  // Draw inner circle (months)
+  for (let i = 0; i < months.length; i++) {
+    let angle = (2 * Math.PI / months.length) * i - Math.PI/2;
+    let nextAngle = (2 * Math.PI / months.length) * (i+1) - Math.PI/2;
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY);
+    ctx.arc(centerX, centerY, monthRadius, angle, nextAngle, false);
+    ctx.closePath();
+    ctx.fillStyle = (selectedMonth === i+1) ? "#00eaff" : (i % 2 === 0 ? "#3f51b5" : "#23294a");
+    ctx.globalAlpha = (selectedMonth === i+1) ? 0.85 : 0.7;
+    ctx.shadowColor = (selectedMonth === i+1) ? "#00eaff" : "#0ff";
+    ctx.shadowBlur = (selectedMonth === i+1) ? 24 : 8;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.shadowBlur = 0;
+
+    // Draw month text
+    let textAngle = angle + (nextAngle - angle)/2;
+    let tx = centerX + Math.cos(textAngle) * (monthRadius - 30);
+    let ty = centerY + Math.sin(textAngle) * (monthRadius - 30);
+    ctx.save();
+    ctx.translate(tx, ty);
+    ctx.rotate(textAngle + Math.PI/2);
+    ctx.font = "bold 16px Orbitron, Arial";
+    ctx.fillStyle = (selectedMonth === i+1) ? "#23294a" : "#aee7ff";
+    ctx.textAlign = "center";
+    ctx.fillText(months[i], 0, 0);
+    ctx.restore();
+  }
+
+  // Draw center circle outline
+  ctx.beginPath();
+  ctx.arc(centerX, centerY, innerRadius, 0, 2 * Math.PI);
+  ctx.strokeStyle = "#aee7ff";
+  ctx.lineWidth = 4;
+  ctx.shadowColor = "#00eaff";
+  ctx.shadowBlur = 12;
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+}
+
+// Populate dropdowns
+const monthSelect = document.getElementById('month-select');
+const dateSelect = document.getElementById('date-select');
+months.forEach((m, i) => {
+  let opt = document.createElement('option');
+  opt.value = i+1;
+  opt.textContent = m;
+  monthSelect.appendChild(opt);
+});
+function updateDateOptions() {
+  let month = parseInt(monthSelect.value);
+  let days = daysInMonth[month-1];
+  // Leap year for Feb (optional: always 29 for demo)
+  if(month === 2) days = 29;
+  dateSelect.innerHTML = '';
+  for(let d=1; d<=days; d++) {
+    let opt = document.createElement('option');
+    opt.value = d;
+    opt.textContent = d;
+    dateSelect.appendChild(opt);
+  }
+}
+monthSelect.addEventListener('change', () => {
+  updateDateOptions();
+  updateDisplay();
+});
+dateSelect.addEventListener('change', updateDisplay);
+
+// Initial population
+monthSelect.value = 1;
+updateDateOptions();
+
+function updateDisplay() {
+  let month = parseInt(monthSelect.value);
+  let date = parseInt(dateSelect.value);
+  drawWheel(month, date);
+  document.getElementById('selected-date').textContent = `${months[month-1]} ${date}`;
+  document.getElementById('zodiac-sign').textContent = `Zodiac: ${getZodiac(month, date)}`;
+  updateTimeline(month, date);
+}
+
+// Timeline display
+function updateTimeline(month, date) {
+  const key = (month < 10 ? "0" : "") + month + "-" + (date < 10 ? "0" : "") + date;
+  const events = astralEvents[key];
+  const eventsList = document.getElementById('events-list');
+  eventsList.innerHTML = '';
+  if (events && events.length > 0) {
+    events.forEach(ev => {
+      const div = document.createElement('div');
+      div.className = 'event';
+      div.innerHTML = `<span class="event-year">${ev.year}</span> ${ev.desc}`;
+      eventsList.appendChild(div);
+    });
+  } else {
+    eventsList.innerHTML = `<div class="no-events">No major recorded astral events for this date.</div>`;
+  }
+}
+
+// Initial draw
+updateDisplay();
+}
+</script>
+

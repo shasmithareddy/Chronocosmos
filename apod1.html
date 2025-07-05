@@ -1,0 +1,246 @@
+<!-- Animated stars background -->
+<canvas class="stars"></canvas>
+<section class="celestial-gallery">
+  <h1>🌌 Celestial Gallery</h1>
+  <form class="date-picker" onsubmit="event.preventDefault(); fetchAPOD();">
+    <label for="apod-date">Choose a date:</label>
+    <input type="date" id="apod-date" max="">
+  </form>
+  <div id="apod-content">
+    <!-- Spinner, media, title, explanation, or error will be injected here -->
+  </div>
+</section>
+<style>
+/* Space-themed background with animated stars */
+.stars {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  top: 0; left: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.celestial-gallery {
+  position: relative;
+  z-index: 1;
+  max-width: 600px;
+  margin: 3em auto 2em auto;
+  background: rgba(20, 24, 48, 0.95);
+  border-radius: 18px;
+  box-shadow: 0 0 40px 10px #1a1e33, 0 0 0 1px #2e3a6b;
+  padding: 2em 1.5em 2.5em 1.5em;
+  text-align: center;
+  overflow: hidden;
+}
+.celestial-gallery h1 {
+  font-family: 'Orbitron', 'Segoe UI', Arial, sans-serif;
+  font-size: 2.1em;
+  letter-spacing: 0.08em;
+  color: #aee7ff;
+  text-shadow: 0 0 8px #00eaff, 0 0 24px #0ff;
+  margin-bottom: 0.5em;
+}
+.date-picker {
+  margin: 1em 0 2em 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.7em;
+}
+.date-picker label {
+  font-size: 1em;
+  color: #b3cfff;
+  text-shadow: 0 0 4px #0ff4;
+}
+.date-picker input[type="date"] {
+  background: #1a223a;
+  color: #fff;
+  border: 1px solid #3a4a7a;
+  border-radius: 6px;
+  padding: 0.4em 0.7em;
+  font-size: 1em;
+  outline: none;
+  box-shadow: 0 0 6px #0ff2;
+  transition: border 0.2s;
+}
+.apod-media {
+  margin: 0 auto 1.5em auto;
+  max-width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 0 24px #0ff4, 0 0 0 1px #2e3a6b;
+  background: #111;
+  overflow: hidden;
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.apod-media img, .apod-media iframe {
+  width: 100%;
+  height: auto;
+  max-height: 350px;
+  display: block;
+  border: none;
+  background: #111;
+}
+.apod-media iframe {
+  aspect-ratio: 16/9;
+  min-height: 220px;
+  max-height: 350px;
+}
+.apod-title {
+  font-size: 1.3em;
+  color: #fff;
+  text-shadow: 0 0 8px #0ff, 0 0 16px #0ff6;
+  margin-bottom: 0.5em;
+  margin-top: 0.2em;
+}
+.apod-explanation {
+  font-size: 1em;
+  color: #b3cfff;
+  text-shadow: 0 0 4px #0ff2;
+  margin-bottom: 0.5em;
+  line-height: 1.6;
+  text-align: left;
+  background: rgba(10,20,40,0.5);
+  border-radius: 8px;
+  padding: 1em;
+}
+.spinner {
+  margin: 2em auto;
+  width: 48px;
+  height: 48px;
+  border: 5px solid #1a223a;
+  border-top: 5px solid #00eaff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  box-shadow: 0 0 16px #0ff8;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.error-message {
+  color: #ffb3b3;
+  background: #2a0a1a;
+  border: 1px solid #ff3a6b;
+  border-radius: 8px;
+  padding: 1em;
+  margin: 1em 0;
+  text-shadow: 0 0 4px #ff3a6b;
+}
+/* Responsive */
+@media (max-width: 700px) {
+  .celestial-gallery {
+    max-width: 98vw;
+    padding: 1em 0.5em 1.5em 0.5em;
+  }
+  .apod-media img, .apod-media iframe {
+    max-height: 220px;
+  }
+}
+@media (max-width: 480px) {
+  .celestial-gallery h1 {
+    font-size: 1.3em;
+  }
+  .apod-title {
+    font-size: 1em;
+  }
+  .apod-explanation {
+    font-size: 0.95em;
+    padding: 0.7em;
+  }
+  .apod-media {
+    min-height: 120px;
+  }
+}
+</style>
+<!-- Google Fonts for Orbitron (optional, for a sci-fi look) -->
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
+<script>
+function initAPOD() {
+  // Starry background animation
+  const canvas = document.querySelector('.stars');
+  const ctx = canvas.getContext('2d');
+  let stars = [];
+  function resizeStars() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    stars = [];
+    for (let i = 0; i < 120; i++) {
+      stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.2 + 0.3,
+        o: Math.random() * 0.7 + 0.3,
+        d: Math.random() * 2 * Math.PI,
+        s: Math.random() * 0.5 + 0.1
+      });
+    }
+  }
+  function drawStars() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let star of stars) {
+      ctx.save();
+      ctx.globalAlpha = star.o + 0.3 * Math.sin(Date.now()/900 + star.d);
+      ctx.beginPath();
+      ctx.arc(star.x, star.y, star.r, 0, 2 * Math.PI);
+      ctx.fillStyle = "#aee7ff";
+      ctx.shadowColor = "#00eaff";
+      ctx.shadowBlur = 8;
+      ctx.fill();
+      ctx.restore();
+    }
+    requestAnimationFrame(drawStars);
+  }
+  window.addEventListener('resize', resizeStars);
+  resizeStars();
+  drawStars();
+
+  const API_KEY = "DEMO_KEY"; // Replace with your real key
+  const apodContent = document.getElementById('apod-content');
+  const dateInput = document.getElementById('apod-date');
+  const todayStr = new Date().toISOString().split('T')[0];
+  dateInput.max = todayStr;
+  dateInput.value = todayStr;
+
+  dateInput.addEventListener('change', fetchAPOD);
+  fetchAPOD();
+
+  function fetchAPOD() {
+    const date = dateInput.value || todayStr;
+    apodContent.innerHTML = `<div class="spinner"></div>`;
+    fetch(`https://api.nasa.gov/planetary/apod?api_key=${API_KEY}&date=${date}`)
+      .then(res => {
+        if (!res.ok) throw new Error("Failed to fetch APOD. Try another date.");
+        return res.json();
+      })
+      .then(data => {
+        showAPOD(data);
+      })
+      .catch(err => {
+        apodContent.innerHTML = `<div class="error-message">🚫 ${err.message}</div>`;
+      });
+  }
+
+  function showAPOD(data) {
+    let mediaHTML = '';
+    if (data.media_type === "image") {
+      mediaHTML = `<img src="${data.url}" alt="${data.title}" loading="lazy" onerror="this.onerror=null;this.src='';document.getElementById('apod-content').innerHTML='<div class=error-message>🚫 Image not available for this date.</div>';">`;
+    } else if (data.media_type === "video") {
+      if (data.url.includes("youtube.com") || data.url.includes("youtu.be") || data.url.includes("vimeo.com")) {
+        mediaHTML = `<iframe src="${data.url.replace("watch?v=", "embed/")}" allowfullscreen></iframe>`;
+      } else {
+        mediaHTML = `<a href="${data.url}" target="_blank" rel="noopener" style="color:#aee7ff;text-decoration:underline;">View Video</a>`;
+      }
+    } else {
+      mediaHTML = `<div class="error-message">🚫 Media type not supported for this date.</div>`;
+    }
+    apodContent.innerHTML = `
+      <div class="apod-media">${mediaHTML}</div>
+      <div class="apod-title">${data.title || "Untitled"}</div>
+      <div class="apod-explanation">${data.explanation || "No explanation available."}</div>
+    `;
+  }
+}
+</script>

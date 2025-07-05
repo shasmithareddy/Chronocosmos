@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Astral Archive</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #0a1026;
+  overflow-x: hidden;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  position: relative;
+}
+.starfield {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+}
+.astral-archive-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  position: relative;
+  padding: 2rem 1rem;
+  flex-direction: column;
+}
+.astral-card {
+  background: rgba(20, 24, 56, 0.95);
+  border-radius: 1.5rem;
+  box-shadow: 0 0 32px 8px #1a1a40, 0 0 0 2px #3f51b5;
+  padding: 2rem 2.5rem;
+  max-width: 500px;
+  width: 100%;
+  color: #fff;
+  text-align: center;
+  animation: fadeIn 1.2s cubic-bezier(.4,0,.2,1);
+  border: 1.5px solid #3f51b5;
+  backdrop-filter: blur(2px);
+  margin-bottom: 2rem;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(30px);}
+  to { opacity: 1; transform: translateY(0);}
+}
+.astral-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 0 0 8px #7f9cf5, 0 0 24px #3f51b5;
+  margin-bottom: 0.5rem;
+  letter-spacing: 1px;
+}
+.astral-date {
+  color: #b3c7f7;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  text-shadow: 0 0 4px #3f51b5;
+}
+.astral-desc {
+  font-size: 1.08rem;
+  color: #e0e6ff;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+  text-shadow: 0 0 6px #1a237e44;
+}
+.astral-img {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+  margin-bottom: 1rem;
+  filter: drop-shadow(0 0 12px #7f9cf5cc);
+  border-radius: 50%;
+  background: rgba(63,81,181,0.08);
+  padding: 0.5rem;
+  display: inline-block;
+}
+.astral-fallback {
+  color: #ffb347;
+  font-size: 1.2rem;
+  margin-top: 1rem;
+  text-shadow: 0 0 8px #ffb34755;
+}
+.trivia-section-title {
+  font-size: 1.2em;
+  color: #aee7ff;
+  text-shadow: 0 0 8px #0ff, 0 0 16px #0ff6;
+  margin: 1.5em 0 1em 0;
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+.trivia-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5em;
+  justify-content: center;
+  margin-bottom: 2em;
+}
+.flip-card {
+  background: transparent;
+  min-width: 180px;
+  max-width: 260px;
+  width: 100%;
+  height: 160px;
+  perspective: 900px;
+  margin-bottom: 1em;
+  box-sizing: border-box;
+  flex: 1 1 220px;
+}
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.7s cubic-bezier(.4,2,.6,1);
+  transform-style: preserve-3d;
+  box-shadow: 0 0 16px #0ff4, 0 0 0 1px #2e3a6b;
+  border-radius: 14px;
+}
+.flip-card:hover .flip-card-inner,
+.flip-card:focus-within .flip-card-inner {
+  transform: rotateY(180deg);
+}
+.flip-card-front, .flip-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1.2em 1em;
+  font-size: 1em;
+  box-shadow: 0 0 16px #0ff4, 0 0 0 1px #2e3a6b;
+}
+.flip-card-front {
+  background: linear-gradient(135deg, #1a1e33 80%, #2e3a6b 100%);
+  color: #aee7ff;
+  text-shadow: 0 0 8px #0ff, 0 0 16px #0ff6;
+  cursor: pointer;
+}
+.flip-card-back {
+  background: linear-gradient(135deg, #2e3a6b 80%, #1a1e33 100%);
+  color: #fff;
+  transform: rotateY(180deg);
+  text-shadow: 0 0 8px #0ff, 0 0 16px #0ff6;
+  cursor: pointer;
+}
+.flip-icon {
+  font-size: 1.5em;
+  margin-bottom: 0.5em;
+  filter: drop-shadow(0 0 8px #0ff8);
+}
+@media (max-width: 600px) {
+  .astral-card {
+    padding: 1.2rem 0.7rem;
+    max-width: 98vw;
+  }
+  .astral-title { font-size: 1.3rem; }
+  .astral-img { width: 60px; height: 60px; }
+  .trivia-cards {
+    flex-direction: column;
+    align-items: center;
+  }
+  .flip-card {
+    width: 90vw;
+    min-width: 0;
+    max-width: 98vw;
+  }
+}
+</style>
+</head>
+<body>
+<canvas class="starfield"></canvas>
+<div class="astral-archive-container">
+  <div class="astral-card" id="astralCard">
+    <!-- Content will be injected by JS -->
+  </div>
+  <div class="trivia-section-title">Space Trivia Flipcards</div>
+  <div class="trivia-cards" id="trivia-cards"></div>
+</div>
+<script>
+// Starfield animation
+const canvas = document.querySelector('.starfield');
+const ctx = canvas.getContext('2d');
+let stars = [];
+function resizeStarfield() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  stars = Array.from({length: 120}, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    r: Math.random() * 1.2 + 0.3,
+    o: Math.random() * 0.6 + 0.4
+  }));
+}
+function drawStarfield() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  for (const s of stars) {
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, 2 * Math.PI);
+    ctx.fillStyle = `rgba(180,200,255,${s.o})`;
+    ctx.shadowColor = '#7f9cf5';
+    ctx.shadowBlur = 8;
+    ctx.fill();
+  }
+}
+function animateStarfield() {
+  for (const s of stars) {
+    s.y += s.r * 0.12;
+    if (s.y > canvas.height) s.y = 0;
+  }
+  drawStarfield();
+  requestAnimationFrame(animateStarfield);
+}
+window.addEventListener('resize', resizeStarfield);
+resizeStarfield();
+animateStarfield();
+
+// Astral Archive Data (sample events with SVGs and long descriptions)
+const astralEvents = {
+"06-20": [
+{
+  title: "Discovery of Charon",
+  date: "1978-06-20",
+  svg: `<svg class="astral-img" viewBox="0 0 80 80"><circle cx="40" cy="40" r="32" fill="#aee7ff"/><circle cx="60" cy="30" r="12" fill="#7f9cf5" opacity="0.7"/><circle cx="40" cy="40" r="28" fill="none" stroke="#fff" stroke-width="2" opacity="0.2"/><circle cx="40" cy="40" r="18" fill="#0a1026" opacity="0.2"/></svg>`,
+  desc: `On June 20, 1978, astronomer James Christy, working at the U.S. Naval Observatory, noticed an unusual bulge in photographic images of Pluto. After careful analysis, he realized this was not a flaw but evidence of a companion moon, later named Charon. The discovery of Charon was pivotal, as it allowed astronomers to accurately determine Pluto’s mass and provided new insights into the dynamics of the Pluto-Charon system. Charon is unusually large compared to Pluto, making the pair more of a binary system than a typical planet-moon relationship. This breakthrough fundamentally changed our understanding of the outer solar system and set the stage for future missions, such as New Horizons, to explore these distant worlds in detail.`
+},
+{
+  title: "First American Woman in Space",
+  date: "1983-06-20",
+  svg: `<svg class="astral-img" viewBox="0 0 80 80"><ellipse cx="40" cy="60" rx="28" ry="10" fill="#7f9cf5" opacity="0.3"/><circle cx="40" cy="36" r="18" fill="#fff"/><rect x="34" y="54" width="12" height="16" rx="6" fill="#aee7ff"/><circle cx="40" cy="36" r="10" fill="#3f51b5" opacity="0.4"/><rect x="36" y="62" width="8" height="8" rx="4" fill="#7f9cf5"/></svg>`,
+  desc: `On June 20, 1983, Sally Ride made history as the first American woman to travel into space, launching aboard the Space Shuttle Challenger on mission STS-7. Her journey was a landmark moment not only for NASA but for women in science and engineering worldwide. Sally Ride’s presence on the crew shattered gender barriers and inspired generations of young women to pursue careers in STEM fields. During the mission, she operated the shuttle’s robotic arm to deploy and retrieve satellites, demonstrating technical expertise and composure under pressure. Her legacy endures through her advocacy for science education and her role as a trailblazer for equality in space exploration.`
+},
+{
+  title: "Mars Express Arrives at Mars",
+  date: "2003-06-20",
+  svg: `<svg class="astral-img" viewBox="0 0 80 80"><circle cx="40" cy="40" r="30" fill="#e07a5f"/><ellipse cx="40" cy="40" rx="30" ry="12" fill="#fff" opacity="0.1"/><rect x="20" y="20" width="40" height="8" rx="4" fill="#aee7ff" opacity="0.7"/><rect x="20" y="52" width="40" height="8" rx="4" fill="#aee7ff" opacity="0.7"/><circle cx="40" cy="40" r="10" fill="#fff" opacity="0.1"/></svg>`,
+  desc: `On June 20, 2003, the European Space Agency’s Mars Express spacecraft entered orbit around Mars, marking Europe’s first successful mission to another planet. Mars Express carried a suite of scientific instruments designed to study the Martian atmosphere, surface, and subsurface. Its radar system made groundbreaking discoveries about water ice beneath the planet’s surface, while its high-resolution camera captured stunning images of Martian landscapes. The mission’s success demonstrated Europe’s growing capabilities in planetary exploration and has provided invaluable data for understanding Mars’ geology, climate, and potential for past or present life. Mars Express continues to operate, making it one of the longest-lasting missions at Mars.`
+}
+],
+"06-29": [
+{
+  title: "Launch of Soyuz 11",
+  date: "1971-06-29",
+  svg: `<svg class="astral-img" viewBox="0 0 80 80"><rect x="36" y="20" width="8" height="40" rx="4" fill="#fff"/><polygon points="40,10 48,28 32,28" fill="#3f51b5"/><ellipse cx="40" cy="62" rx="12" ry="6" fill="#7f9cf5" opacity="0.5"/><circle cx="40" cy="40" r="8" fill="#aee7ff" opacity="0.5"/></svg>`,
+  desc: `Soyuz 11 was launched on June 29, 1971, carrying cosmonauts Georgi Dobrovolski, Viktor Patsayev, and Vladislav Volkov to the world’s first space station, Salyut 1. The crew spent over three weeks aboard, setting a new record for time spent in space and conducting valuable scientific experiments. Tragically, during re-entry, a cabin vent valve opened prematurely, causing depressurization. All three cosmonauts lost their lives, making them the only humans to die in space beyond Earth’s atmosphere. The incident led to significant redesigns in Soviet spacecraft, including the requirement for cosmonauts to wear pressure suits during critical mission phases.`
+}
+],
+"06-30": [
+{
+  title: "Tunguska Event",
+  date: "1908-06-30",
+  svg: `<svg class="astral-img" viewBox="0 0 80 80"><ellipse cx="40" cy="60" rx="28" ry="10" fill="#e07a5f" opacity="0.3"/><circle cx="40" cy="36" r="18" fill="#fff" opacity="0.7"/><polygon points="40,10 60,50 20,50" fill="#e07a5f"/><rect x="36" y="50" width="8" height="20" rx="4" fill="#7f9cf5" opacity="0.7"/></svg>`,
+  desc: `On June 30, 1908, a massive explosion occurred over the remote Tunguska region of Siberia, flattening over 2,000 square kilometers of forest. The event is believed to have been caused by the airburst of a small asteroid or comet, releasing energy equivalent to 10–15 megatons of TNT. No impact crater was found, but the devastation was immense, with millions of trees knocked down in a radial pattern. The Tunguska Event remains the largest impact event in recorded history and serves as a stark reminder of the potential hazards posed by near-Earth objects. It has inspired ongoing efforts to monitor and defend against asteroid threats.`
+},
+{
+  title: "Asteroid Day Declared",
+  date: "2016-06-30",
+  svg: `<svg class="astral-img" viewBox="0 0 80 80"><circle cx="40" cy="40" r="32" fill="#aee7ff"/><ellipse cx="40" cy="60" rx="28" ry="10" fill="#7f9cf5" opacity="0.3"/><rect x="20" y="20" width="40" height="8" rx="4" fill="#e07a5f" opacity="0.7"/><circle cx="60" cy="30" r="8" fill="#fff" opacity="0.5"/></svg>`,
+  desc: `In 2016, the United Nations officially designated June 30 as International Asteroid Day, commemorating the anniversary of the Tunguska Event. The day aims to raise global awareness about the risks posed by asteroids and the importance of planetary defense. Scientists, educators, and space agencies around the world use Asteroid Day to promote research, share knowledge, and encourage international cooperation in tracking and mitigating potential asteroid impacts. The initiative highlights the need for continued vigilance and technological innovation to protect our planet from cosmic hazards, ensuring a safer future for all.`
+}
+],
+"07-01": [
+{
+  title: "Mars Pathfinder Launch",
+  date: "1996-07-01",
+  svg: `<svg class="astral-img" viewBox="0 0 80 80"><circle cx="40" cy="40" r="30" fill="#e07a5f"/><rect x="30" y="50" width="20" height="10" rx="5" fill="#aee7ff"/><rect x="36" y="20" width="8" height="30" rx="4" fill="#fff"/><circle cx="40" cy="40" r="10" fill="#fff" opacity="0.1"/></svg>`,
+  desc: `On July 1, 1996, NASA launched the Mars Pathfinder mission, which would become a milestone in planetary exploration. The spacecraft carried the Sojourner rover, the first wheeled vehicle to operate on another planet. Pathfinder’s innovative airbag landing system allowed it to safely touch down on the Martian surface, paving the way for future missions. The mission provided a wealth of scientific data about Mars’ atmosphere, climate, and geology, and Sojourner’s images and experiments captivated the public. Mars Pathfinder demonstrated the feasibility of low-cost, high-impact missions and inspired a new era of robotic exploration of the Red Planet.`
+}
+],
+"07-02": [
+{
+  title: "Soyuz 14 Launch",
+  date: "1974-07-02",
+  svg: `<svg class="astral-img" viewBox="0 0 80 80"><rect x="36" y="20" width="8" height="40" rx="4" fill="#fff"/><polygon points="40,10 48,28 32,28" fill="#3f51b5"/><ellipse cx="40" cy="62" rx="12" ry="6" fill="#7f9cf5" opacity="0.5"/><circle cx="40" cy="40" r="8" fill="#aee7ff" opacity="0.5"/></svg>`,
+  desc: `Soyuz 14 launched on July 2, 1974, carrying cosmonauts Yuri Artyukhin and Pavel Popovich to the Salyut 3 space station, a secret military outpost in orbit. The mission demonstrated the Soviet Union’s ability to conduct extended crewed operations aboard a military platform, including Earth observation and reconnaissance. The crew spent 15 days aboard Salyut 3, performing experiments and testing the station’s systems. Soyuz 14’s success contributed to the development of future space stations and highlighted the strategic importance of space during the Cold War era.`
+}
+],
+"07-03": [
+{
+  title: "First American Spacewalk (Noted)",
+  date: "1965-06-03",
+  svg: `<svg class="astral-img" viewBox="0 0 80 80"><circle cx="40" cy="40" r="32" fill="#aee7ff"/><ellipse cx="40" cy="60" rx="28" ry="10" fill="#7f9cf5" opacity="0.3"/><rect x="36" y="20" width="8" height="40" rx="4" fill="#fff"/><circle cx="40" cy="36" r="10" fill="#3f51b5" opacity="0.4"/></svg>`,
+  desc: `On June 3, 1965, astronaut Edward H. White II became the first American to perform a spacewalk, or extravehicular activity (EVA), during NASA’s Gemini 4 mission. White floated outside the spacecraft for over 20 minutes, using a hand-held maneuvering unit to control his movements. His historic EVA demonstrated the feasibility of working outside a spacecraft and paved the way for future lunar and orbital missions. The achievement was a major milestone in the space race and showcased American ingenuity and courage in the face of the unknown.`
+}
+],
+"07-04": [
+{
+  title: "Mars Pathfinder Landing",
+  date: "1997-07-04",
+  svg: `<svg class="astral-img" viewBox="0 0 80 80"><circle cx="40" cy="40" r="30" fill="#e07a5f"/><rect x="30" y="50" width="20" height="10" rx="5" fill="#aee7ff"/><rect x="36" y="20" width="8" height="30" rx="4" fill="#fff"/><circle cx="40" cy="40" r="10" fill="#fff" opacity="0.1"/></svg>`,
+  desc: `On July 4, 1997, NASA’s Mars Pathfinder mission made a dramatic landing on the Red Planet, using an innovative airbag system to cushion its descent. The mission deployed the Sojourner rover, which became the first wheeled vehicle to explore another planet. Pathfinder’s images and scientific data revolutionized our understanding of Mars’ surface and atmosphere, revealing evidence of ancient floods and a more dynamic climate than previously thought. The mission’s success inspired a new generation of Mars exploration and demonstrated the value of robotic missions in planetary science.`
+},
+{
+  title: "Discovery of Comet Shoemaker-Levy 9",
+  date: "1993-07-04",
+  svg: `<svg class="astral-img" viewBox="0 0 80 80"><ellipse cx="40" cy="60" rx="28" ry="10" fill="#e07a5f" opacity="0.3"/><circle cx="40" cy="36" r="18" fill="#fff" opacity="0.7"/><polygon points="40,10 60,50 20,50" fill="#e07a5f"/><rect x="36" y="50" width="8" height="20" rx="4" fill="#7f9cf5" opacity="0.7"/></svg>`,
+  desc: `On July 4, 1993, astronomers Carolyn and Eugene Shoemaker and David Levy discovered a fragmented comet orbiting Jupiter. Designated Shoemaker-Levy 9, the comet would later collide with Jupiter in a spectacular series of impacts, providing scientists with a unique opportunity to study planetary collisions and their effects. The event underscored the dynamic nature of our solar system and the potential hazards posed by comets and asteroids.`
+}
+],
+"07-05": [
+{
+  title: "Launch of Cassini-Huygens",
+  date: "1997-07-05",
+  svg: `<svg class="astral-img" viewBox="0 0 80 80"><ellipse cx="40" cy="60" rx="28" ry="10" fill="#7f9cf5" opacity="0.3"/><circle cx="40" cy="36" r="18" fill="#fff"/><rect x="34" y="54" width="12" height="16" rx="6" fill="#aee7ff"/><circle cx="40" cy="36" r="10" fill="#3f51b5" opacity="0.4"/><rect x="36" y="62" width="8" height="8" rx="4" fill="#7f9cf5"/></svg>`,
+  desc: `On July 5, 1997, NASA launched the Cassini-Huygens spacecraft on a seven-year journey to Saturn. Cassini carried a sophisticated suite of instruments and the European-built Huygens probe, which would later land on Saturn’s moon Titan. Cassini’s mission revolutionized our understanding of the Saturnian system, revealing the complexity of its rings, the diversity of its moons, and the potential for life in subsurface oceans. The mission’s spectacular images and discoveries captivated the world and set new standards for planetary exploration.`
+}
+],
+"07-06": [
+{
+  title: "First Image of Earth from the Moon",
+  date: "1966-07-06",
+  svg: `<svg class="astral-img" viewBox="0 0 80 80"><circle cx="40" cy="40" r="32" fill="#aee7ff"/><ellipse cx="40" cy="60" rx="28" ry="10" fill="#7f9cf5" opacity="0.3"/><circle cx="40" cy="36" r="10" fill="#3f51b5" opacity="0.4"/><circle cx="60" cy="30" r="8" fill="#fff" opacity="0.5"/></svg>`,
+  desc: `On July 6, 1966, NASA’s Lunar Orbiter 1 captured the first photograph of Earth from lunar orbit. The haunting image showed our planet as a distant, blue-and-white sphere suspended in the blackness of space. This iconic photograph provided a new perspective on Earth’s place in the universe and inspired a sense of unity and stewardship for our fragile world. The achievement demonstrated the capabilities of robotic spacecraft and paved the way for future lunar and planetary missions.`
+}
+],
+"07-07": [
+{
+  title: "Salyut 5 Launch",
+  date: "1976-07-07",
+  svg: `<svg class="astral-img" viewBox="0 0 80 80"><rect x="36" y="20" width="8" height="40" rx="4" fill="#fff"/><polygon points="40,10 48,28 32,28" fill="#3f51b5"/><ellipse cx="40" cy="62" rx="12" ry="6" fill="#7f9cf5" opacity="0.5"/><circle cx="40" cy="40" r="8" fill="#aee7ff" opacity="0.5"/></svg>`,
+  desc: `On July 7, 1976, the Soviet Union launched Salyut 5, the last of its Almaz-class military space stations. Salyut 5 was equipped with advanced Earth observation and reconnaissance equipment, reflecting the strategic importance of space during the Cold War. The station hosted two successful crewed missions and contributed to the development of long-duration spaceflight and station operations. Salyut 5’s legacy lives on in the design and operation of modern space stations.`
+}
+],
+"07-08": [
+{
+  title: "Final Space Shuttle Launch (STS-135)",
+  date: "2011-07-08",
+  svg: `<svg class="astral-img" viewBox="0 0 80 80"><rect x="36" y="20" width="8" height="40" rx="4" fill="#fff"/><polygon points="40,10 48,28 32,28" fill="#3f51b5"/><ellipse cx="40" cy="62" rx="12" ry="6" fill="#7f9cf5" opacity="0.5"/><circle cx="40" cy="40" r="8" fill="#aee7ff" opacity="0.5"/></svg>`,
+  desc: `On July 8, 2011, Space Shuttle Atlantis launched on STS-135, the final mission of NASA’s Space Shuttle program. The mission delivered supplies and equipment to the International Space Station, marking the end of an era in human spaceflight. Over 30 years, the shuttle fleet enabled the construction of the ISS, launched satellites, and inspired millions. The program’s conclusion paved the way for new commercial and international partnerships in space exploration.`
+},
+{
+  title: "Pegasus Rocket Launch",
+  date: "1991-07-08",
+  svg: `<svg class="astral-img" viewBox="0 0 80 80"><rect x="36" y="20" width="8" height="40" rx="4" fill="#fff"/><polygon points="40,10 48,28 32,28" fill="#3f51b5"/><ellipse cx="40" cy="62" rx="12" ry="6" fill="#7f9cf5" opacity="0.5"/><circle cx="40" cy="40" r="8" fill="#aee7ff" opacity="0.5"/></svg>`,
+  desc: `On July 8, 1991, NASA successfully launched the Pegasus rocket from beneath a B-52 aircraft. This innovative air-launched rocket was designed to deliver small satellites into orbit at a lower cost than traditional ground-launched vehicles. The Pegasus program demonstrated the potential for flexible, rapid-response access to space and has been used for a variety of scientific and commercial missions.`
+}
+]
+};
+
+// 8 Trivia Cards (universal for all events, but you can customize per event if you wish)
+const triviaData = [
+{
+  question: "Which planet has the most moons?",
+  answer: "Saturn currently holds the record with over 80 confirmed moons.",
+  icon: "🪐"
+},
+{
+  question: "What is the largest volcano in the solar system?",
+  answer: "Olympus Mons on Mars, about 22 km (13.6 mi) high.",
+  icon: "🌋"
+},
+{
+  question: "Who was the first human in space?",
+  answer: "Yuri Gagarin, Soviet cosmonaut, in 1961.",
+  icon: "👨‍🚀"
+},
+{
+  question: "What is a light-year?",
+  answer: "The distance light travels in one year—about 9.46 trillion km (5.88 trillion miles).",
+  icon: "✨"
+},
+{
+  question: "Which spacecraft was the first to leave the solar system?",
+  answer: "Voyager 1, launched by NASA in 1977, is the first spacecraft to enter interstellar space.",
+  icon: "🚀"
+},
+{
+  question: "What is the Kuiper Belt?",
+  answer: "A region beyond Neptune filled with icy bodies, dwarf planets, and comets.",
+  icon: "🛰️"
+},
+{
+  question: "Which planet spins on its side?",
+  answer: "Uranus rotates at a nearly 90-degree angle to its orbit, appearing to roll around the Sun.",
+  icon: "🔄"
+},
+{
+  question: "What is the Great Red Spot?",
+  answer: "A giant, persistent storm on Jupiter, larger than Earth and raging for centuries.",
+  icon: "🌀"
+}
+];
+
+// Utility: Get today's MM-DD
+function getTodayMMDD() {
+  const now = new Date();
+  const mm = String(now.getMonth() + 1).padStart(2, '0');
+  const dd = String(now.getDate()).padStart(2, '0');
+  return `${mm}-${dd}`;
+}
+
+// Render event or fallback
+function renderAstralEvent() {
+  const todayKey = getTodayMMDD();
+  const card = document.getElementById('astralCard');
+  const events = astralEvents[todayKey];
+
+  if (events && events.length > 0) {
+    card.innerHTML = events.map(ev => `
+      <div style="margin-bottom: 2rem;">
+        ${ev.svg}
+        <div class="astral-title">${ev.title}</div>
+        <div class="astral-date">${ev.date}</div>
+        <div class="astral-desc">${ev.desc}</div>
+      </div>
+    `).join('');
+  } else {
+    card.innerHTML = `
+      <div class="astral-title">Astral Archive</div>
+      <div class="astral-fallback">
+        No major astronomical event found for today’s date.<br>
+        <span style="font-size:1.5em;">&#9732;</span>
+      </div>
+    `;
+  }
+}
+
+// Render Trivia Flipcards
+function renderTrivia() {
+  const container = document.getElementById('trivia-cards');
+  container.innerHTML = triviaData.map(triv => `
+    <div class="flip-card" tabindex="0">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div class="flip-icon">${triv.icon}</div>
+          <div>${triv.question}</div>
+          <div style="margin-top:0.7em;font-size:0.9em;opacity:0.7;">Click or tap to reveal</div>
+        </div>
+        <div class="flip-card-back">
+          <div class="flip-icon">${triv.icon}</div>
+          <div>${triv.answer}</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+renderAstralEvent();
+renderTrivia();
+</script>
+</body>
+</html>
