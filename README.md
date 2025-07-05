@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Chronocosmos – README</title>
+  <!---- <title>Chronocosmos – README</title>
   <style>
     body {
       background: #0a1026;
@@ -32,7 +32,7 @@
     ul {
       padding-left: 1.2rem;
     }
-  </style>
+  </style> ----->
 </head>
 <body>
 
