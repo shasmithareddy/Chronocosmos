@@ -32,7 +32,10 @@
     ul {
       padding-left: 1.2rem;
     }
-  </style> ----->
+    a {
+      color: #8fd1ff;
+    }
+  </style> ---->
 </head>
 <body>
 
@@ -46,6 +49,7 @@
     <li>🗓️ <strong>𝐀𝐬𝐭𝐫𝐚𝐥 𝐀𝐫𝐜𝐡𝐢𝐯𝐞</strong>: Auto-updates based on current date. Flipcards show trivia/events. Daily JS logic.</li>
     <li>🌀 <strong>𝐂𝐡𝐫𝐨𝐧𝐨𝐙𝐨𝐝𝐢𝐚𝐜</strong>: Spinwheel to pick dates, shows zodiac & timeline.</li>
     <li>🌙 <strong>𝐋𝐮𝐧𝐚𝐫 𝐋𝐞𝐧𝐬</strong>: Moon phase SVGs, illumination %, waxing/waning with messages.</li>
+    <li>✨ <strong>𝐒𝐭𝐚𝐫-𝐂𝐫𝐨𝐬𝐬𝐞𝐝 𝐒𝐭𝐨𝐫𝐲 𝐌𝐨𝐝𝐮𝐥𝐞</strong>: Click image card reveals the animated romantic tale of Altair & Vega, embedded in Lunar Lens.</li>
     <li>🌠 <strong>𝐂𝐞𝐥𝐞𝐬𝐭𝐢𝐚𝐥 𝐆𝐚𝐥𝐥𝐞𝐫𝐲</strong>: NASA APOD integration with history.</li>
     <li>🪐 <strong>𝐎𝐫𝐛𝐢𝐭𝐚𝐥 𝐌𝐞𝐭𝐫𝐢𝐜𝐬</strong>: Age & weight calculators for planets with styled cards.</li>
   </ul>
@@ -63,10 +67,12 @@ chronocosmos/
 ├── ind.html           ← Main entry point
 ├── archive.html       ← Astral Archive
 ├── wheel.html         ← ChronoZodiac
-├── lunar.html         ← Lunar Lens
+├── lunar.html         ← Lunar Lens (includes Altair & Vega story)
 ├── apod1.html         ← Celestial Gallery
 ├── orbital.html       ← Orbital Metrics
 ├── style.css          ← Shared styles
+├── story.html         ← Altair Vega Animation
+├── image.jpg          ← Altair Vega Image
 ├── assets/            ← Fonts, icons, etc.
 └── README.md
   </code></pre>
@@ -81,10 +87,10 @@ chronocosmos/
 
   <h2>📦 𝐈𝐧𝐬𝐭𝐚𝐥𝐥𝐚𝐭𝐢𝐨𝐧 / 𝐒𝐞𝐭𝐮𝐩</h2>
   <pre><code>
-git clone https://github.com/your-username/chronocosmos.git
+git clone https://github.com/shasmithareddy/Chronocosmos.git
 cd chronocosmos
   </code></pre>
-  <p>Open <code>index.html</code> with <strong>Live Server</strong>. Keep all HTML files in the same folder.</p>
+  <p>Open <code>ind.html</code> with <strong>Live Server</strong>. Keep all HTML files in the same folder.</p>
 
   <h2>💡 𝐔𝐧𝐢𝐪𝐮𝐞 𝐈𝐧𝐭𝐞𝐫𝐚𝐜𝐭𝐢𝐯𝐞 𝐅𝐞𝐚𝐭𝐮𝐫𝐞𝐬</h2>
   <ul>
@@ -93,13 +99,15 @@ cd chronocosmos
     <li>✔ Moon phase visuals + logic</li>
     <li>✔ Planet age/weight cards</li>
     <li>✔ Trivia flipcards + animations</li>
+    <li>✔ Clickable Altair-Vega star-crossed love story</li>
   </ul>
 
   <h2>⚠️ 𝐊𝐧𝐨𝐰𝐧 𝐋𝐢𝐦𝐢𝐭𝐚𝐭𝐢𝐨𝐧𝐬</h2>
   <ul>
     <li>APOD fetch needs internet</li>
     <li>Spinwheel not touch optimized yet</li>
-    <li>Heavy canvas load on low-end browsers</li>
+    <li>Heavy canvas load on low-end browsers need to reload again to view pages </li>
+    
   </ul>
 
   <h2>✨ 𝐅𝐮𝐭𝐮𝐫𝐞 𝐄𝐧𝐡𝐚𝐧𝐜𝐞𝐦𝐞𝐧𝐭𝐬</h2>
