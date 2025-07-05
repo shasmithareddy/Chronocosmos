@@ -1,0 +1,1708 @@
+<!-- Starry background for this section only -->
+<canvas class="stars-bg"></canvas>
+
+<style>
+/* Cosmic theme for ChronoZodiac */
+.stars-bg {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  top: 0; left: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.chrono-section h2 {
+  font-family: 'Orbitron', 'Exo', Arial, sans-serif;
+  font-size: 2em;
+  letter-spacing: 0.08em;
+  color: #aee7ff;
+  text-shadow: 0 0 8px #00eaff, 0 0 24px #0ff;
+  margin-top: 1.2em;
+  margin-bottom: 0.7em;
+  text-align: center;
+}
+#wheel-container {
+  position: relative;
+  width: 500px;
+  height: 500px;
+  margin: 40px auto;
+  z-index: 1;
+  background: rgba(20, 24, 48, 0.97);
+  border-radius: 50%;
+  box-shadow: 0 0 40px 10px #1a1e33, 0 0 0 1px #2e3a6b;
+  overflow: visible;
+}
+#wheel {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: 0 0 40px #0ff4 inset;
+  position: relative;
+  overflow: visible;
+}
+#center-circle {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 180px;
+  height: 180px;
+  margin-left: -90px;
+  margin-top: -90px;
+  background: linear-gradient(135deg, #23294a 70%, #0a1026 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5em;
+  font-weight: bold;
+  box-shadow: 0 0 24px #aee7ff, 0 0 0 2px #2e3a6b;
+  z-index: 2;
+  flex-direction: column;
+  color: #aee7ff;
+  text-shadow: 0 0 8px #00eaff, 0 0 16px #0ff;
+  border: 2px solid #3f51b5;
+}
+#selected-date {
+  font-size: 1.1em;
+  margin-bottom: 0.5em;
+  color: #fff;
+  text-shadow: 0 0 8px #aee7ff;
+}
+#zodiac-sign {
+  font-size: 1.1em;
+  margin-top: 10px;
+  color: #ffe082;
+  text-shadow: 0 0 8px #ff9800, 0 0 16px #ff9800;
+}
+#controls {
+  margin: 20px auto 0 auto;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  z-index: 2;
+}
+label {
+  font-size: 1.1em;
+  color: #b3cfff;
+  text-shadow: 0 0 4px #0ff4;
+}
+select {
+  font-size: 1.1em;
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 1px solid #3a4a7a;
+  background: #1a223a;
+  color: #fff;
+  box-shadow: 0 0 6px #0ff2;
+  margin-left: 0.5em;
+  outline: none;
+  transition: border 0.2s;
+}
+#timeline {
+  width: 90%;
+  max-width: 600px;
+  margin: 30px auto 0 auto;
+  background: rgba(20, 24, 48, 0.97);
+  border-radius: 14px;
+  box-shadow: 0 0 24px #0ff4, 0 0 0 1px #2e3a6b;
+  padding: 24px 20px 20px 20px;
+  text-align: left;
+  z-index: 1;
+  position: relative;
+  color: #e0eaff;
+}
+#timeline h3 {
+  margin-top: 0;
+  color: #aee7ff;
+  font-family: 'Orbitron', 'Exo', Arial, sans-serif;
+  text-shadow: 0 0 8px #00eaff;
+  letter-spacing: 0.04em;
+}
+.event {
+  margin-bottom: 18px;
+  padding-left: 10px;
+  border-left: 3px solid #ff9800;
+  background: rgba(255,255,255,0.02);
+  border-radius: 4px;
+  box-shadow: 0 0 8px #ff980044;
+}
+.event-year {
+  font-weight: bold;
+  color: #ff9800;
+  margin-right: 8px;
+  text-shadow: 0 0 6px #ff9800;
+}
+.no-events {
+  color: #888;
+  font-style: italic;
+  text-shadow: 0 0 4px #fff2;
+}
+@media (max-width: 700px) {
+  #wheel-container {
+    width: 98vw;
+    height: 98vw;
+    min-width: 260px;
+    min-height: 260px;
+    max-width: 98vw;
+    max-height: 98vw;
+  }
+  #wheel {
+    width: 100%;
+    height: 100%;
+  }
+  #center-circle {
+    width: 34vw;
+    height: 34vw;
+    min-width: 90px;
+    min-height: 90px;
+    margin-left: -17vw;
+    margin-top: -17vw;
+    font-size: 1em;
+  }
+}
+@media (max-width: 480px) {
+  #timeline {
+    padding: 12px 4vw 12px 4vw;
+  }
+  #controls {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+</style>
+
+<div class="chrono-section">
+  <h2>ChronoZodiac</h2>
+  <div id="controls">
+    <label>
+      Month:
+      <select id="month-select"></select>
+    </label>
+    <label>
+      Date:
+      <select id="date-select"></select>
+    </label>
+  </div>
+  <div id="wheel-container">
+    <canvas id="wheel" width="500" height="500"></canvas>
+    <div id="center-circle">
+      <div id="selected-date">--</div>
+      <div id="zodiac-sign" style="font-size:0.8em; margin-top:10px;">Zodiac: --</div>
+    </div>
+  </div>
+  <div id="timeline">
+    <h3>Astral Events Timeline</h3>
+    <div id="events-list"></div>
+  </div>
+</div>
+
+<script>
+function initChronoZodiac() {
+// Starry background animation (scoped to this page)
+(function() {
+  let canvasBg = document.querySelector('.stars-bg');
+  if (!canvasBg) {
+    canvasBg = document.createElement('canvas');
+    canvasBg.className = 'stars-bg';
+    document.body.appendChild(canvasBg);
+  }
+  const ctxBg = canvasBg.getContext('2d');
+  let stars = [];
+  function resizeStars() {
+    canvasBg.width = window.innerWidth;
+    canvasBg.height = window.innerHeight;
+    stars = [];
+    for (let i = 0; i < 120; i++) {
+      stars.push({
+        x: Math.random() * canvasBg.width,
+        y: Math.random() * canvasBg.height,
+        r: Math.random() * 1.2 + 0.3,
+        o: Math.random() * 0.7 + 0.3,
+        d: Math.random() * 2 * Math.PI,
+        s: Math.random() * 0.5 + 0.1
+      });
+    }
+  }
+  function drawStars() {
+    ctxBg.clearRect(0, 0, canvasBg.width, canvasBg.height);
+    for (let star of stars) {
+      ctxBg.save();
+      ctxBg.globalAlpha = star.o + 0.3 * Math.sin(Date.now()/900 + star.d);
+      ctxBg.beginPath();
+      ctxBg.arc(star.x, star.y, star.r, 0, 2 * Math.PI);
+      ctxBg.fillStyle = "#aee7ff";
+      ctxBg.shadowColor = "#00eaff";
+      ctxBg.shadowBlur = 8;
+      ctxBg.fill();
+      ctxBg.restore();
+    }
+    requestAnimationFrame(drawStars);
+  }
+  window.addEventListener('resize', resizeStars);
+  resizeStars();
+  drawStars();
+})();
+
+// Zodiac sign calculation
+function getZodiac(month, day) {
+  const zodiac = [
+    { sign: "Capricorn", from: [1, 1], to: [1, 19] },
+    { sign: "Aquarius", from: [1, 20], to: [2, 18] },
+    { sign: "Pisces", from: [2, 19], to: [3, 20] },
+    { sign: "Aries", from: [3, 21], to: [4, 19] },
+    { sign: "Taurus", from: [4, 20], to: [5, 20] },
+    { sign: "Gemini", from: [5, 21], to: [6, 20] },
+    { sign: "Cancer", from: [6, 21], to: [7, 22] },
+    { sign: "Leo", from: [7, 23], to: [8, 22] },
+    { sign: "Virgo", from: [8, 23], to: [9, 22] },
+    { sign: "Libra", from: [9, 23], to: [10, 22] },
+    { sign: "Scorpio", from: [10, 23], to: [11, 21] },
+    { sign: "Sagittarius", from: [11, 22], to: [12, 21] },
+    { sign: "Capricorn", from: [12, 22], to: [12, 31] }
+  ];
+  for (let z of zodiac) {
+    let [fromM, fromD] = z.from;
+    let [toM, toD] = z.to;
+    if (
+      (month === fromM && day >= fromD) ||
+      (month === toM && day <= toD) ||
+      (fromM > toM && ((month === fromM && day >= fromD) || (month === toM && day <= toD)))
+    ) {
+      return z.sign;
+    }
+  }
+  return "--";
+}
+
+// Sample astral events data
+/* const astralEvents = {
+  "01-01": [
+    { year: 1801, desc: "Discovery of the first asteroid, Ceres, by Giuseppe Piazzi." },
+    { year: 2001, desc: "Launch of NASA's Genesis spacecraft to collect solar wind samples." }
+  ],
+  "07-20": [
+    { year: 1969, desc: "Apollo 11: Neil Armstrong and Buzz Aldrin become the first humans to walk on the Moon." }
+  ],
+  "02-19": [
+    { year: 1473, desc: "Birth of Nicolaus Copernicus, who formulated a heliocentric model of the universe." }
+  ],
+  "12-14": [
+    { year: 1972, desc: "Apollo 17: Last humans (Eugene Cernan and Harrison Schmitt) walk on the Moon." }
+  ],
+  "08-21": [
+    { year: 2017, desc: "Great American Solar Eclipse: Total solar eclipse visible across the USA." }
+  ],
+  "04-12": [
+    { year: 1961, desc: "Yuri Gagarin becomes the first human in space (Vostok 1)." }
+  ],
+  "06-30": [
+    { year: 1908, desc: "Tunguska event: A large explosion caused by an asteroid or comet in Siberia." }
+  ],
+  // Add more events as desired
+}; */
+const astralEvents = {
+  "01-01": [
+    { year: 1801, desc: "Discovery of the first asteroid, Ceres, by Giuseppe Piazzi." },
+    { year: 2001, desc: "Launch of NASA's Genesis spacecraft to collect solar wind samples." },
+    { year: 2019, desc: "New Horizons spacecraft flies by Kuiper Belt object Arrokoth (2014 MU69)." }
+  ],
+  "01-02": [
+    { year: 1959, desc: "Luna 1 becomes the first spacecraft to reach the vicinity of the Moon." },
+    { year: 2004, desc: "NASA's Stardust spacecraft collects dust from comet Wild 2." }
+  ],
+  "01-03": [
+    { year: 2004, desc: "Spirit rover lands successfully on Mars." },
+    { year: 2019, desc: "China's Chang’e 4 lands on the far side of the Moon — a first in history." }
+  ],
+  "01-04": [
+    { year: 1643, desc: "Birth of Isaac Newton, physicist and mathematician who revolutionized physics and astronomy." },
+    { year: 1958, desc: "Sputnik 1, the first artificial satellite, reenters Earth's atmosphere and burns up." }
+  ],
+  "01-05": [
+    { year: 2005, desc: "Discovery of dwarf planet Eris, more massive than Pluto." },
+    { year: 1969, desc: "Launch of Venera 6 to study Venus’s atmosphere." }
+  ],
+  "01-06": [
+    { year: 1967, desc: "Launch of Surveyor 7, last of NASA’s Surveyor series to the Moon." },
+    { year: 2005, desc: "Huygens probe separates from Cassini spacecraft en route to Saturn’s moon Titan." }
+  ],
+  "01-07": [
+    { year: 1610, desc: "Galileo Galilei observes Jupiter’s four largest moons for the first time." },
+    { year: 1985, desc: "Japan launches Sakigake, first planetary probe launched by a country other than the U.S. or USSR." }
+  ],
+  "01-08": [
+    { year: 1942, desc: "Birth of Stephen Hawking, theoretical physicist and cosmologist." },
+    { year: 1973, desc: "Luna 21 launched to deliver the Lunokhod 2 rover to the Moon." }
+  ],
+  "01-09": [
+    { year: 1990, desc: "Launch of Japan’s Hiten spacecraft, first deep space mission by Japan." },
+    { year: 1992, desc: "First confirmed discovery of exoplanets orbiting a pulsar (PSR B1257+12)." }
+  ],
+  "01-10": [
+    { year: 1946, desc: "First radar echoes bounced off the Moon by Project Diana." },
+    { year: 1962, desc: "NASA launches OSO 1, first Orbiting Solar Observatory." }
+  ],
+  "01-11": [
+    { year: 1787, desc: "William Herschel discovers Uranus's moons Titania and Oberon." },
+    { year: 2002, desc: "NASA's Mars Odyssey begins mapping the surface of Mars." }
+  ],
+  "01-12": [
+    { year: 2005, desc: "Deep Impact spacecraft launches toward comet Tempel 1." },
+    { year: 1820, desc: "Astronomical Society of London (now the Royal Astronomical Society) is founded." }
+  ],
+  "01-13": [
+    { year: 2022, desc: "James Webb Space Telescope completes its final major deployment." },
+    { year: 1910, desc: "First public statement that Halley’s Comet might be toxic when it passes Earth." }
+  ],
+  "01-14": [
+    { year: 2005, desc: "ESA’s Huygens probe lands on Saturn’s moon Titan, first landing in outer Solar System." },
+    { year: 1969, desc: "Soyuz 5 launches from Baikonur Cosmodrome." }
+  ],
+  "01-15": [
+    { year: 2006, desc: "NASA’s Stardust capsule returns to Earth with comet dust samples." },
+    { year: 1969, desc: "First docking of two manned Soviet spacecraft in orbit (Soyuz 4 & 5)." }
+  ],
+  "01-16": [
+    { year: 2003, desc: "Launch of Space Shuttle Columbia on STS-107, which would end in tragedy." },
+    { year: 1978, desc: "NASA selects its first group of astronauts to include women and minorities." }
+  ],
+  "01-17": [
+    { year: 1985, desc: "Launch of the British satellite Skynet 4A." },
+    { year: 1997, desc: "Space Shuttle Atlantis returns from STS-81 mission to Mir space station." }
+  ],
+  "01-18": [
+    { year: 1933, desc: "Discovery of Pluto’s moon Charon predicted based on observations." },
+    { year: 2002, desc: "Discovery of asteroid 2002 AA29, a near-Earth co-orbital object." }
+  ],
+  "01-19": [
+    { year: 2006, desc: "Launch of NASA's New Horizons mission to Pluto and the Kuiper Belt." },
+    { year: 1965, desc: "Gemini 2 test mission launches successfully." }
+  ],
+  "01-20": [
+    { year: 1990, desc: "NASA's Galileo spacecraft flies by Venus for a gravity assist." },
+    { year: 1971, desc: "Launch of the first space station module prototype by USSR." }
+  ],
+  "01-21": [
+    { year: 1960, desc: "Little Joe 1B launches, testing Mercury capsule systems with a monkey onboard." },
+    { year: 2008, desc: "NASA’s MESSENGER makes its first flyby of Mercury." }
+  ],
+  "01-22": [
+    { year: 1992, desc: "Russia launches Progress M-10 to resupply Mir space station." },
+    { year: 2004, desc: "NASA’s Opportunity rover launched to Mars." }
+  ],
+  "01-23": [
+    { year: 1998, desc: "Mir space station suffers a computer failure and oxygen leak." },
+    { year: 1968, desc: "Apollo 5 tests the lunar module in space for the first time." }
+  ],
+  "01-24": [
+    { year: 1986, desc: "Voyager 2 makes its closest approach to Uranus." },
+    { year: 2004, desc: "Opportunity rover lands on Mars, begins its mission." }
+  ],
+  "01-25": [
+    { year: 2004, desc: "Mars rover Opportunity sends first color images from Mars." },
+    { year: 1962, desc: "NASA launches TIROS-4, a weather satellite." }
+  ],
+  "01-26": [
+    { year: 1962, desc: "NASA’s Ranger 3 launched to the Moon (missed the Moon)." },
+    { year: 1978, desc: "First successful Soviet weather satellite, Meteor-Priroda 2, launched." }
+  ],
+  "01-27": [
+    { year: 1967, desc: "Apollo 1 tragedy: fire kills three astronauts during a test on the launchpad." },
+    { year: 1973, desc: "Launch of Skylab B, a backup of the original space station." }
+  ],
+  "01-28": [
+    { year: 1986, desc: "Space Shuttle Challenger disaster: all 7 astronauts killed 73 seconds after launch." },
+    { year: 1964, desc: "Launch of Ranger 6 to the Moon (impacted but failed to send images)." }
+  ],
+  "01-29": [
+    { year: 1988, desc: "NASA launches TDRS-3 satellite to improve communication with spacecraft." },
+    { year: 1991, desc: "Discovery launches STS-39 for a DoD mission." }
+  ],
+  "01-30": [
+    { year: 1964, desc: "NASA's Saturn I SA-5 launches, first with live S-IV second stage." },
+    { year: 1974, desc: "Luna 21 ends transmission after deploying Lunokhod 2 on the Moon." }
+  ],
+  "01-31": [
+    { year: 1958, desc: "Explorer 1, first American satellite, is launched." },
+    { year: 1961, desc: "Ham the chimp is launched into space aboard Mercury-Redstone 2." }
+  ],
+  "02-01": [
+    { year: 2003, desc: "Space Shuttle Columbia disintegrates on re‑entry (STS‑107), tragically killing all seven crew members." },
+    { year: 1963, desc: "First successful rendezvous in space: Gemini 6A & 7 execute the first docking practice." }
+  ],
+  "02-02": [
+    { year: 1969, desc: "Luna 14 enters lunar orbit, studying the Moon’s gravity field." },
+    { year: 2011, desc: "Space Shuttle Discovery launches on STS‑133, its final mission." }
+  ],
+  "02-03": [
+    { year: 1995, desc: "STS‑63: Space Shuttle Discovery performs the first U.S.–Mir rendezvous; first female pilot Eileen Collins flies." }
+  ],
+  "02-04": [
+    { year: 1872, desc: "Great Aurora of Feb 4, 1872: Powerful geomagnetic storm lights up low‑latitude skies." },
+    { year: 1989, desc: "NASA’s Galileo spacecraft makes its flyby of Earth for gravity assist on its way to Jupiter." }
+  ],
+  "02-05": [
+    { year: 1971, desc: "Apollo 14‘s lunar module lifts off from the Moon for return to Earth." }
+  ],
+  "02-06": [
+    { year: 1958, desc: "MIT Lincoln Lab bounces radar off Venus — first radar detection of another planet." }
+  ],
+  "02-07": [
+    { year: 1974, desc: "Skylab mission concludes after a productive stay in orbit." },
+    { year: 1926, desc: "Robert Goddard launches first successful liquid‑fuel rocket." }
+  ],
+  "02-08": [
+    { year: 1974, desc: "Final Skylab crew returns safely to Earth." }
+  ],
+  "02-09": [
+    { year: 1913, desc: "Great Meteor Procession: hundreds of fireballs streak across North America." }
+  ],
+  "02-10": [
+    { year: 1966, desc: "Saturn IB rocket launches on its first test flight." },
+    { year: 2009, desc: "First hypervelocity collision in orbit: Iridium 33 and Cosmos 2251 satellites collide." }
+  ],
+  "02-11": [
+    { year: 1990, desc: "Pioneer 11 officially leaves the Solar System." }
+  ],
+  "02-12": [
+    { year: 2025, desc: "Full 'Snow Moon' peaks at 8:53 AM EST." }
+  ],
+  "02-13": [
+    { year: 2012, desc: "First flight of ESA’s Vega rocket." }
+  ],
+  "02-14": [
+    { year: 2025, desc: "Valentine’s Day planetary alignment — Venus, Mars, Jupiter & Saturn visible after sunset." }
+  ],
+  "02-15": [
+    { year: 1965, desc: "Gemini 3 makes America’s first two‑man spaceflight." },
+    { year: 1972, desc: "Skylab 3 returns to Earth." }
+  ],
+  "02-16": [
+    { year: 2005, desc: "Deep Impact mission launches towards comet Tempel 1." },
+    { year: 1959, desc: "Soviet spacecraft Luna 1 becomes the first to reach the vicinity of the Moon." }
+  ],
+  "02-17": [
+    { year: 2010, desc: "Discovery of first Earth‑trojan asteroid." }
+  ],
+  "02-18": [
+    { year: 2001, desc: "Genesis spacecraft launches to collect solar wind samples." }
+  ],
+  "02-19": [
+    { year: 1473, desc: "Birth of Nicolaus Copernicus." }
+  ],
+  "02-20": [
+    { year: 1962, desc: "John Glenn becomes the first American to orbit Earth (Mercury‑Atlas 6)." }
+  ],
+  "02-21": [
+    { year: 1972, desc: "Launch of Landsat 1, the first Earth‑observing satellite." }
+  ],
+  "02-22": [
+    { year: 1997, desc: "NASA’s Stardust spacecraft captures comet dust from Wild 2." },
+    { year: 1947, desc: "Launch of Project Vanguard’s first rocket." }
+  ],
+  "02-23": [
+    { year: 1990, desc: "Pioneer 11 exits the heliosphere into interstellar space." }
+  ],
+  "02-24": [
+    { year: 1972, desc: "NASA launches Pioneer 10 on a mission to Jupiter and beyond." }
+  ],
+  "02-25": [
+    { year: 1969, desc: "Launch of Mariner 6 toward Mars." },
+    { year: 2025, desc: "Seven‑planet parade visible in the night sky near month’s end." }
+  ],
+  "02-26": [
+    { year: 1966, desc: "First launch of Saturn IB rocket." }
+  ],
+  "02-27": [
+    { year: 1996, desc: "Pathfinder mission launches toward Mars." }
+  ],
+  "02-28": [
+    { year: 1959, desc: "Discoverer 1 spy satellite goes missing after launch." },
+    { year: 1928, desc: "Discovery of the Raman Effect (India’s National Science Day)." }
+  ],
+  "02-29": [
+    { year: 46, desc: "First recorded Leap Day on February 29 in Julian calendar." }
+  ],
+  "03-01": [
+    { year: 1966, desc: "Venera 3 becomes the first human-made object to impact another planet (Venus)." },
+    { year: 2002, desc: "NASA’s Mars Odyssey begins mapping Mars in detail." }
+  ],
+  "03-02": [
+    { year: 1972, desc: "Launch of Pioneer 10, the first spacecraft to travel through the asteroid belt and fly by Jupiter." },
+    { year: 2004, desc: "Launch of ESA's Rosetta spacecraft to study comet 67P." }
+  ],
+  "03-03": [
+    { year: 1969, desc: "Apollo 9 launches to test the lunar module in Earth orbit." },
+    { year: 1972, desc: "Pioneer 10 begins its historic journey toward the outer planets." }
+  ],
+  "03-04": [
+    { year: 1979, desc: "Voyager 1 makes its closest approach to Jupiter." },
+    { year: 1931, desc: "Birth of James B. Irwin, Apollo 15 astronaut and lunar module pilot." }
+  ],
+  "03-05": [
+    { year: 1979, desc: "Voyager 1 discovers volcanic activity on Jupiter's moon Io — first known active volcano beyond Earth." },
+    { year: 2005, desc: "ESA's Mars Express discovers frozen water at Mars’ south pole." }
+  ],
+  "03-06": [
+    { year: 2009, desc: "NASA launches Kepler Space Telescope to find exoplanets." },
+    { year: 1965, desc: "Launch of Cosmos 60, a failed Soviet lunar landing mission." }
+  ],
+  "03-07": [
+    { year: 2009, desc: "Kepler telescope begins search for Earth-like planets." },
+    { year: 1962, desc: "Launch of OSO-1, NASA’s first Orbiting Solar Observatory." }
+  ],
+  "03-08": [
+    { year: 1979, desc: "Voyager 1 captures detailed images of Jupiter’s rings and moons." }
+  ],
+  "03-09": [
+    { year: 1986, desc: "Giotto spacecraft passes within 600 km of Halley's Comet." },
+    { year: 2011, desc: "Discovery’s final landing ends STS-133 mission." }
+  ],
+  "03-10": [
+    { year: 1977, desc: "Rings of Uranus discovered during a stellar occultation." },
+    { year: 2006, desc: "Mars Reconnaissance Orbiter enters Mars orbit." }
+  ],
+  "03-11": [
+    { year: 2008, desc: "NASA's STS-123 mission launches Space Shuttle Endeavour to the ISS." }
+  ],
+  "03-12": [
+    { year: 2001, desc: "Discovery launches on STS-102 with Leonardo MPLM module for the ISS." }
+  ],
+  "03-13": [
+    { year: 1781, desc: "William Herschel discovers the planet Uranus." },
+    { year: 1986, desc: "Halley's Comet makes closest approach to Earth during 1986 visit." }
+  ],
+  "03-14": [
+    { year: 2018, desc: "Death of Stephen Hawking, renowned theoretical physicist." },
+    { year: 1879, desc: "Birth of Albert Einstein." }
+  ],
+  "03-15": [
+    { year: 1985, desc: "First internet domain name symbolics.com is registered (later hosting space content)." }
+  ],
+  "03-16": [
+    { year: 1926, desc: "Robert H. Goddard launches first successful liquid-fueled rocket." },
+    { year: 1966, desc: "Gemini 8 completes first docking in space (with Agena target)." }
+  ],
+  "03-17": [
+    { year: 1958, desc: "Launch of Vanguard 1, fourth artificial Earth satellite." }
+  ],
+  "03-18": [
+    { year: 1965, desc: "Alexei Leonov becomes first human to walk in space (Voskhod 2)." }
+  ],
+  "03-19": [
+    { year: 2008, desc: "ESA's Jules Verne cargo spacecraft docks with ISS — first ATV." }
+  ],
+  "03-20": [
+    { year: 2004, desc: "NASA's Messenger spacecraft flies past Earth for gravity assist toward Mercury." }
+  ],
+  "03-21": [
+    { year: 2001, desc: "Russian Mir space station reenters Earth's atmosphere and burns up over the South Pacific." }
+  ],
+  "03-22": [
+    { year: 1965, desc: "NASA's Ranger 9 launches, later crashing into the Moon while sending live TV images." }
+  ],
+  "03-23": [
+    { year: 1965, desc: "Gemini 3 launches — first two-man US spaceflight." },
+    { year: 2001, desc: "Final re-entry of Mir space station after 15 years in orbit." }
+  ],
+  "03-24": [
+    { year: 1992, desc: "STS-45 launches Space Shuttle Atlantis with ATLAS-1 lab for atmospheric studies." }
+  ],
+  "03-25": [
+    { year: 1979, desc: "Space Shuttle Columbia delivered to Kennedy Space Center for final prep before first flight." }
+  ],
+  "03-26": [
+    { year: 1969, desc: "Launch of Mariner 7 toward Mars." }
+  ],
+  "03-27": [
+    { year: 1968, desc: "Yuri Gagarin, first human in space, dies in a jet crash." }
+  ],
+  "03-28": [
+    { year: 1802, desc: "Discovery of asteroid Pallas, the second known asteroid." }
+  ],
+  "03-29": [
+    { year: 1974, desc: "Mariner 10 makes first flyby of Mercury." },
+    { year: 2006, desc: "Total solar eclipse visible from Africa and parts of Asia." }
+  ],
+  "03-30": [
+    { year: 2005, desc: "Discovery of dwarf planet Makemake in the Kuiper Belt." }
+  ],
+  "03-31": [
+    { year: 1995, desc: "Launch of first American woman pilot in space shuttle (Eileen Collins on STS-63)." }
+  ],
+  "04-01": [
+    { year: 1960, desc: "Launch of TIROS‑1, the first U.S. weather satellite." },
+    { year: 2024, desc: "APOD features a swirling magnetic field near our galaxy’s central black hole." }
+  ],
+  "04-02": [
+    { year: 2005, desc: "Huygens probe transmits first images from Titan’s surface." },
+    { year: 1977, desc: "Voyager 1 is launched by NASA." }
+  ],
+  "04-03": [
+    { year: 1973, desc: "Launch of Pioneer 11’s twin, Pioneer 10, first through asteroid belt." }
+  ],
+  "04-04": [
+    { year: 1983, desc: "STS‑6: Challenger’s maiden flight deploys TDRS‑1 satellite." }
+  ],
+  "04-05": [
+    { year: 1991, desc: "STS‑37 launches, deploying Gamma‑Ray Observatory and conducting two EVAs." }
+  ],
+  "04-06": [
+    { year: 2002, desc: "Mars Odyssey begins high-resolution mapping of Mars." }
+  ],
+  "04-07": [
+    { year: 1991, desc: "Second EVA during STS‑37 mission." }
+  ],
+  "04-08": [
+    { year: 2024, desc: "Tens of millions witness total solar eclipse — study finds satellites visible in eclipse skies." }
+  ],
+  "04-09": [
+    { year: 2014, desc: "Rosetta performs flyby of asteroid Steins on its way to comet 67P." }
+  ],
+  "04-10": [
+    { year: 2013, desc: "NASA’s GRAIL-B impacts the Moon at mission end." }
+  ],
+  "04-11": [
+    { year: 1970, desc: "Apollo 13 safely returns to Earth after in‑flight crisis." }
+  ],
+  "04-12": [
+    { year: 1961, desc: "Yuri Gagarin becomes first human in space aboard Vostok 1." },
+    { year: 1981, desc: "STS‑1: Columbia launches, marking first Space Shuttle flight.",
+    desc: "Yuri’s Night and International Day of Human Space Flight established to commemorate these." }
+  ],
+  "04-13": [
+    { year: 1781, desc: "William Herschel discovers Uranus’s rings." }
+  ],
+  "04-14": [
+    { year: 1998, desc: "First views of the ISS from STS‑89 Alliance mission." }
+  ],
+  "04-15": [
+    { year: 1990, desc: "Hubble Space Telescope receives its first servicing mission." }
+  ],
+  "04-16": [
+    { year: 2005, desc: "Lyrid Meteor Shower kicks off (active April 16–25)." }
+  ],
+  "04-17": [
+    { year: 2021, desc: "Solar Energetic Particle event observed by multiple spacecraft." }
+  ],
+  "04-18": [
+    { year: 2001, desc: "Genesis spacecraft launches to collect solar wind." }
+  ],
+  "04-19": [
+    { year: 1990, desc: "Ulysses spacecraft passes over Sun’s poles." }
+  ],
+  "04-20": [
+    { year: 1986, desc: "Giotto spacecraft images Halley's Comet." }
+  ],
+  "04-21": [
+    { year: 2025, desc: "Lyrid meteor shower peaks tonight (April 21–22)." },
+    { year: 2025, desc: "International Dark Sky Week begins (April 21–28)." }
+  ],
+  "04-22": [
+    { year: 2025, desc: "Lyrid meteor shower peak in predawn hours." }
+  ],
+  "04-23": [
+    { year: 1996, desc: "Mars 96 Pathfinder mission launches (later fails)." }
+  ],
+  "04-24": [
+    { year: 2025, desc: "Mini‑planet parade: Moon, Mercury, Venus, Saturn & Neptune cluster pre‑dawn." }
+  ],
+  "04-25": [
+    { year: 1974, desc: "Launch of Mariner 10 toward Mercury." }
+  ],
+  "04-26": [
+    { year: 2020, desc: "Crescent Moon aligns with Venus and M35 cluster (observed phenomenon)." }
+  ],
+  "04-27": [
+    { year: 2025, desc: "New Moon; Venus and Saturn conjunction the next morning." }
+  ],
+  "04-28": [
+    { year: 2025, desc: "Waxing Moon forms triangle with Venus & Saturn in predawn sky." }
+  ],
+  "04-29": [
+    { year: 2005, desc: "Lunar X feature visible in binoculars & small telescopes." }
+  ],
+  "04-30": [
+    { year: 1970, desc: "Apollo 13 crew celebrates Earth‑orbit reentry day." }
+  ],
+  "05-01": [
+    { year: 1949, desc: "Discovery of Neptune’s moon Nereid by Gerard Kuiper." },
+    { year: 2025, desc: "Eta Aquarid meteor shower begins as Earth enters Halley’s Comet debris stream." }
+  ],
+  "05-02": [
+    { year: 2025, desc: "Moon passes near Pollux; Venus nears Neptune." },
+    { year: 2025, desc: "Asteroid Vesta reaches opposition, becoming brightest of the month." }
+  ],
+  "05-03": [
+    { year: 2025, desc: "First‑quarter Moon near Mars & Beehive Cluster." }
+  ],
+  "05-04": [
+    { year: 2025, desc: "Moon, Mars & Beehive Cluster conjunction." },
+    { year: 2014, desc: "Rosetta flies by asteroid Steins." }
+  ],
+  "05-05": [
+    { year: 1961, desc: "National Astronaut Day: first American human spaceflight (Alan Shepard)." },
+    { year: 2025, desc: "Peak of Eta Aquarid meteor shower—10–20 meteors/hour for Northern Hemisphere." }
+  ],
+  "05-06": [
+    { year: 2025, desc: "Continued Eta Aquarid meteor activity at peak." },
+    { year: 1975, desc: "Launch of the European Space Agency (ESA)." }
+  ],
+  "05-07": [
+    { year: 1992, desc: "Space Shuttle Endeavour launches on its maiden voyage (STS‑49)." }
+  ],
+  "05-08": [
+    { year: 1970, desc: "Cosmos 345 launches to study Earth's magnetic field." },
+    { year: 2025, desc: "Waning gibbous Moon rises late evening." }
+  ],
+  "05-09": [
+    { year: 2003, desc: "Hayabusa launched by JAXA to return samples from asteroid Itokawa." }
+  ],
+  "05-10": [
+    { year: 1967, desc: "Launch of Surveyor 3, which landed on the Moon (later visited by Apollo 12)." }
+  ],
+  "05-11": [
+    { year: 2009, desc: "Final servicing mission for Hubble launches (STS‑125)." }
+  ],
+  "05-12": [
+    { year: 2025, desc: "Moon at apogee—farthest from Earth in orbit this month." }
+  ],
+  "05-13": [
+    { year: 2009, desc: "Atlantis crew performs first spacewalk of Hubble servicing mission." }
+  ],
+  "05-14": [
+    { year: 1973, desc: "Skylab, America’s first space station, is launched." }
+  ],
+  "05-15": [
+    { year: 2025, desc: "Moon aligns with Antares in Scorpius constellation." }
+  ],
+  "05-16": [
+    { year: 1963, desc: "Launch of Mercury-Atlas 9, final mission of the Mercury program." }
+  ],
+  "05-17": [
+    { year: 1974, desc: "Launch of the first Synchronous Meteorological Satellite, SMS‑1." },
+    { year: 2025, desc: "Uranus is in conjunction with the Sun—not observable this month." }
+  ],
+  "05-18": [
+    { year: 1969, desc: "Apollo 10 launches for the lunar-landing dress rehearsal." }
+  ],
+  "05-19": [
+    { year: 2000, desc: "Space Shuttle Atlantis launches with first “glass cockpit” (STS‑101)." }
+  ],
+  "05-20": [
+    { year: 2025, desc: "Mars passes close to the Beehive Cluster in Cancer." }
+  ],
+  "05-21": [
+    { year: 2025, desc: "Mercury reaches superior conjunction—behind the Sun from Earth’s view." }
+  ],
+  "05-22": [
+    { year: 2009, desc: "Challenging weather delays landing during STS‑125 mission." },
+    { year: 2025, desc: "Moon near Saturn & Neptune in pre-dawn sky." }
+  ],
+  "05-23": [
+    { year: 2025, desc: "Moon near Venus in morning sky grouping." }
+  ],
+  "05-24": [
+    { year: 1962, desc: "Scott Carpenter flies Mercury‑Atlas 7 — 2nd American in orbit." }
+  ],
+  "05-25": [
+    { year: 2008, desc: "ESA’s Phoenix lander touches down on Mars." },
+    { year: 2025, desc: "Waning crescent Moon visible before dawn." }
+  ],
+  "05-26": [
+    { year: 1969, desc: "Apollo 10 returns to Earth after Moon orbit mission." }
+  ],
+  "05-27": [
+    { year: 2025, desc: "Conjunction of Jupiter and the crescent Moon before sunrise." }
+  ],
+  "05-28": [
+    { year: 1959, desc: "Monkeys Able and Baker become first primates to survive spaceflight." }
+  ],
+  "05-29": [
+    { year: 1919, desc: "Eddington confirms Einstein's General Relativity by observing star positions during solar eclipse." }
+  ],
+  "05-30": [
+    { year: 2020, desc: "SpaceX Crew Dragon Demo-2 launches with astronauts, first private crewed launch." }
+  ],
+  "05-31": [
+    { year: 2025, desc: "Venus reaches greatest elongation—highest evening visibility." }
+  ],
+  "06-01": [
+    { year: 1966, desc: "Surveyor 1 lands on the Moon — first U.S. soft lunar landing." },
+    { year: 2025, desc: "Venus reaches greatest western elongation; bright in pre‑sunrise sky." }
+  ],
+  "06-02": [
+    { year: 2025, desc: "Mars passes Regulus in Leo (~0.5° apart Jun 16–17 peak)." },
+    { year: 2025, desc: "Galaxy core of the Milky Way becomes visible in darker skies." }
+  ],
+  "06-03": [
+    { year: 1965, desc: "Gemini IV launches, carrying Ed White & James McDivitt." },
+    { year: 1965, desc: "Edward White performs first American spacewalk (20 min EVA)." }
+  ],
+  "06-04": [
+    { year: 1963, desc: "Valentina Tereshkova becomes the first woman in space (Vostok 6)." }
+  ],
+  "06-05": [
+    { year: 1966, desc: "Gemini 9: Gene Cernan performs second U.S. spacewalk." }
+  ],
+  "06-06": [
+    { year: 1971, desc: "Soyuz 11 launches, destined for first space station (Salyut‑1)." }
+  ],
+  "06-07": [
+    { year: 2025, desc: "Milky Way’s illuminated core visible from sunset to dawn." }
+  ],
+  "06-08": [
+    { year: 2025, desc: "Mercury joins Jupiter in early-twilight conjunctiones (~June 6–9)." }
+  ],
+  "06-09": [
+    { year: 2025, desc: "Mercury‑Jupiter conjunction (~2° separation) visible after sunset." }
+  ],
+  "06-10": [
+    { year: 2025, desc: "Full 'Strawberry Moon' peaks at 07:43 UTC." }
+  ],
+  "06-11": [
+    { year: 2025, desc: "Jupiter still visible low in west after sunset." }
+  ],
+  "06-12": [
+    { year: 2025, desc: "Hybrid solar eclipse over Indian Ocean/Western Australia." }
+  ],
+  "06-13": [
+    { year: 2025, desc: "Venus & Saturn separate further; satellite observations continue." }
+  ],
+  "06-14": [
+    { year: 2025, desc: "Mars & Regulus closest approach observable." }
+  ],
+  "06-15": [
+    { year: 2025, desc: "Regulus‑Mars conjunction peak in Leo." }
+  ],
+  "06-16": [
+    { year: 1963, desc: "Valentina Tereshkova orbits Earth on Vostok 6." },
+    { year: 2025, desc: "Mars-Regulus within ~0.5°; great binocular view." }
+  ],
+  "06-17": [
+    { year: 2025, desc: "Continuation of Mars‑Regulus conjunction." }
+  ],
+  "06-18": [
+    { year: 1983, desc: "Sally Ride becomes first American woman in space (STS‑7)." }
+  ],
+  "06-19": [
+    { year: 2025, desc: "Moon‑Saturn conjunction in pre‑dawn sky." }
+  ],
+  "06-20": [
+    { year: 2025, desc: "June Solstice marks official start of Northern Summer." }
+  ],
+  "06-21": [
+    { year: 2025, desc: "Milky Way core at its most prominent; great stargazing opportunities." }
+  ],
+  "06-22": [
+    { year: 2025, desc: "Moon & Venus conj in eastern dawn sky." }
+  ],
+  "06-23": [
+    { year: 1975, desc: "Lunar seismic event recorded by TAURID meteors (ESA)." }
+  ],
+  "06-24": [
+    { year: 2025, desc: "Mercury‑Castor‑Pollux close grouping in twilight." }
+  ],
+  "06-25": [
+    { year: 2025, desc: "New Moon in late June – darkest skies for deep‑sky viewing." }
+  ],
+  "06-26": [
+    { year: 2025, desc: "Neptune & Saturn close conjunction in morning sky." }
+  ],
+  "06-27": [
+    { year: 2025, desc: "Nova V572 Velorum peaks (~mag +4.8), visible in Vela." }
+  ],
+  "06-28": [
+    { year: 2025, desc: "Nova V462 Lupi (mag +5.5) still visible — rare dual-nova month." }
+  ],
+  "06-29": [
+    { year: 2025, desc: "Moon‑Mars 'celestial kiss' separation ~0.2° at dusk." }
+  ],
+  "06-30": [
+    { year: 1908, desc: "Tunguska airburst – commemorated on Asteroid Day." },
+    { year: 2025, desc: "Asteroid Day raises global awareness of near‑Earth objects." }
+  ],
+  "07-01": [
+    { year: 2025, desc: "Milky Way core & Scorpius constellation rise early evening." },
+    { year: 2025, desc: "Alpha‑Cygnids meteor shower active (June 30–July 31, peak ~July 18)." }
+  ],
+  "07-02": [
+    { year: 2025, desc: "Mercury & Jupiter visible in western twilight after sunset." }
+  ],
+  "07-03": [
+    { year: 2025, desc: "Earth at aphelion—farthest from the Sun." },
+    { year: 1998, desc: "JAXA launches Nozomi, Japan’s first Mars probe." }
+  ],
+  "07-04": [
+    { year: 2025, desc: "Mercury at greatest eastern elongation—excellent evening viewing." },
+    { year: 1982, desc: "First American astronauts spend July 4 in orbit aboard STS‑4." }
+  ],
+  "07-05": [
+    { year: 2025, desc: "Venus bright in eastern pre‑dawn sky near Pleiades, Aldebaran, Capella." }
+  ],
+  "07-06": [
+    { year: 2025, desc: "Buck Moon rises (full moon peak July 10 UTC 07:36)." },
+    { year: 1982, desc: "1982 Lunar eclipse—the longest total since 1736." }
+  ],
+  "07-07": [
+    { year: 2025, desc: "Mars & crescent Moon form nebular grouping at dusk." }
+  ],
+  "07-08": [
+    { year: 2025, desc: "Jupiter enters morning sky near Venus." }
+  ],
+  "07-09": [
+    { year: 2025, desc: "Saturn visible before dawn in Scorpius." }
+  ],
+  "07-10": [
+    { year: 2025, desc: "Full ‘Buck Moon’ peaks in Capricorn at 15:36 UTC." }
+  ],
+  "07-11": [
+    { year: 1979, desc: "Skylab re‑enters Earth’s atmosphere." }
+  ],
+  "07-12": [
+    { year: 2025, desc: "Alpha Capricornids meteor shower starts—bright fireballs." }
+  ],
+  "07-13": [
+    { year: 2025, desc: "Neptune & Moon visible in Pisces predawn." }
+  ],
+  "07-14": [
+    { year: 2000, desc: "‘Bastille Day’ solar storm—powerful CME & geomagnetic storm." }
+  ],
+  "07-15": [
+    { year: 1965, desc: "Mariner 4 flyby of Mars returns first close-up images." }
+  ],
+  "07-16": [
+    { year: 2025, desc: "Waning Moon aligns with Saturn & Neptune in predawn sky." }
+  ],
+  "07-17": [
+    { year: 2025, desc: "Perseid meteor shower begins (active through Aug 23)." }
+  ],
+  "07-18": [
+    { year: 2025, desc: "Alpha Cygnids peak (ZHR ~3.6)." }
+  ],
+  "07-19": [
+    { year: 2025, desc: "Morning planet parade: Venus, Jupiter & Moon form triangle." }
+  ],
+  "07-20": [
+    { year: 1969, desc: "Apollo 11 lands on Moon—first human steps on lunar surface." },
+    { year: 2025, desc: "Moon occults the Pleiades cluster early today." }
+  ],
+  "07-21": [
+    { year: 2025, desc: "Moon–Venus conjunction before sunrise." }
+  ],
+  "07-22": [
+    { year: 2025, desc: "Moon–Jupiter conjunction in eastern sky pre‑dawn." }
+  ],
+  "07-23": [
+    { year: 1999, desc: "Launch of Chandra X‑ray Observatory aboard Shuttle Columbia." }
+  ],
+  "07-24": [
+    { year: 2025, desc: "New Moon in Leo—ideal dark-sky conditions." }
+  ],
+  "07-25": [
+    { year: 2025, desc: "New Moon; prime week for deep-sky observing." }
+  ],
+  "07-26": [
+    { year: 2025, desc: "Pluto at opposition—best viewing month." }
+  ],
+  "07-27": [
+    { year: 2025, desc: "Morning Moon & Mars form a close pairing." }
+  ],
+  "07-28": [
+    { year: 2025, desc: "Crescent Moon & Mars conjunction at dusk." }
+  ],
+  "07-29": [
+    { year: 2025, desc: "Alpha Capricornids peak tonight with fireballs." },
+    { year: 2025, desc: "Southern Delta Aquariids peak begins (~Jul 29–30)." }
+  ],
+  "07-30": [
+    { year: 2025, desc: "Meteor showers overlap: Alpha Capricornids & Delta Aquariids peak." }
+  ],
+  "07-31": [
+    { year: 2025, desc: "Planet parade before dawn: Mercury, Venus, Mars, Jupiter visible." }
+  ],
+  "08-01": [
+    { year: 2025, desc: "Perseid meteor shower is active this month (July 17–Aug 24)." }
+  ],
+  "08-02": [
+    { year: 2025, desc: "Perseids continue, rising after midnight." }
+  ],
+  "08-03": [
+    { year: 2025, desc: "Kappa Cygnids meteor shower begins (runs Aug 3–25)." }
+  ],
+  "08-04": [
+    { year: 2025, desc: "Good night to spot Perseid fireballs under dark skies." }
+  ],
+  "08-05": [
+    { year: 2025, desc: "Perseids visible bright; radiant in Perseus." }
+  ],
+  "08-06": [
+    { year: 2025, desc: "Perseid meteor streaks expected ~50–100/hr near peak." }
+  ],
+  "08-07": [
+    { year: 2025, desc: "Kappa Cygnids predicted active—may overlap Perseids." }
+  ],
+  "08-08": [
+    { year: 2025, desc: "Near-new Moon—ideal for Perseid observation." }
+  ],
+  "08-09": [
+    { year: 2025, desc: "Full Sturgeon Moon peaks tonight." }
+  ],
+  "08-10": [
+    { year: 2025, desc: "6‑planet alignment visible before sunrise." }
+  ],
+  "08-11": [
+    { year: 2025, desc: "Perseid peak approaching (Aug 12–13), best night tonight." }
+  ],
+  "08-12": [
+    { year: 2025, desc: "Perseid meteor shower peaks tonight—up to ~100 meteors/hr." },
+    { year: 2025, desc: "Moon phase favorable—crescent after peak." }
+  ],
+  "08-13": [
+    { year: 2025, desc: "Perseids continue through early morning." }
+  ],
+  "08-14": [
+    { year: 2025, desc: "Kappa Cygnids still visible; Perseids winding down." }
+  ],
+  "08-15": [
+    { year: 2025, desc: "Alpha Capricornids active through mid-August." }
+  ],
+  "08-16": [
+    { year: 2025, desc: "Southern Delta Aquariids active (~Jul 18–Aug 12)." }
+  ],
+  "08-17": [
+    { year: 2025, desc: "Kappa Cygnids peak today." }
+  ],
+  "08-18": [
+    { year: 2025, desc: "Perseids taper off; remaining fireballs visible." }
+  ],
+  "08-19": [
+    { year: 2025, desc: "Mercury reaches greatest western elongation today." }
+  ],
+  "08-20": [
+    { year: 2025, desc: "Evening skies show Mercury–Venus pairing." }
+  ],
+  "08-21": [
+    { year: 2025, desc: "Evening planet lineup continues: Mercury, Venus." }
+  ],
+  "08-22": [
+    { year: 2025, desc: "Alpha Capricornids end; Southern Delta Aquariids ongoing." }
+  ],
+  "08-23": [
+    { year: 2025, desc: "Perseid and Kappa Cygnid activity ceases tonight." }
+  ],
+  "08-24": [
+    { year: 2025, desc: "Perseids officially end tonight." }
+  ],
+  "08-25": [
+    { year: 2025, desc: "Kappa Cygnids meteor shower ends." }
+  ],
+  "08-26": [
+    { year: 2025, desc: "Aurigids begin—peak around Sep 1 (weak show)." }
+  ],
+  "08-27": [
+    { year: 2025, desc: "Planets recede; look for Saturn and Mars low in morning sky." }
+  ],
+  "08-28": [
+    { year: 2025, desc: "Late‑August twilight; best deep‑sky time after new Moon." }
+  ],
+  "08-29": [
+    { year: 2025, desc: "Summer Milky Way still visible – great for galaxy viewing." }
+  ],
+  "08-30": [
+    { year: 2025, desc: "Summer constellation Cygnus high in evening sky." }
+  ],
+  "08-31": [
+    { year: 2025, desc: "Deep‑sky observing window extends; fall prep begins." }
+  ],
+  "09-01": [
+    { year: 2025, desc: "Aurigids meteor shower peaks (~ZHR 5–6), radiant in Auriga." },
+    { year: 2025, desc: "Venus makes a close approach to the Beehive Cluster (M44)." }
+  ],
+  "09-02": [
+    { year: 2025, desc: "Aurigids still active; good for early morning observation." }
+  ],
+  "09-03": [
+    { year: 2025, desc: "Aurigids meteor activity wanes as shower ends." }
+  ],
+  "09-04": [
+    { year: 2025, desc: "Mars passes near Spica in Virgo (Sep 4–21, closest Sep 12–13)." },
+    { year: 2025, desc: "Moon approaches Aphelion (farthest from Earth)." }
+  ],
+  "09-05": [
+    { year: 2025, desc: "Mars–Spica conjunction peaks (~Sep 12) with binocular view." },
+    { year: 2025, desc: "Kappa Aurigids may linger early this morning." }
+  ],
+  "09-06": [
+    { year: 2025, desc: "Uranus begins retrograde motion." }
+  ],
+  "09-07": [
+    { year: 2025, desc: "Full 'Corn Moon' coincides with total lunar eclipse (Blood Moon)." },
+    { year: 2025, desc: "Total lunar eclipse visible widely across Asia and Australia." }
+  ],
+  "09-08": [
+    { year: 2025, desc: "Post-blood Moon still visible in early evening sky." }
+  ],
+  "09-09": [
+    { year: 2025, desc: "September epsilon-Perseid meteor shower begins." }
+  ],
+  "09-10": [
+    { year: 2025, desc: "Moon at perigee (closest to Earth today)." }
+  ],
+  "09-11": [
+    { year: 2025, desc: "Last Quarter Moon rises around midnight." }
+  ],
+  "09-12": [
+    { year: 2025, desc: "Mars is within ~2.2° of Spica—excellent for binocular viewing." }
+  ],
+  "09-13": [
+    { year: 2025, desc: "Mars & Spica conjunction close approach (~Sep 12–13)." }
+  ],
+  "09-14": [
+    { year: 2025, desc: "Mercury at superior conjunction (behind the Sun)." }
+  ],
+  "09-15": [
+    { year: 2025, desc: "Moon near Beta Tauri (Elnath) — viewable early evening." }
+  ],
+  "09-16": [
+    { year: 2025, desc: "Moon conjunct Jupiter before dawn." }
+  ],
+  "09-17": [
+    { year: 2025, desc: "Moon–Jupiter close approach continues." }
+  ],
+  "09-18": [
+    { year: 2025, desc: "Moon–Venus–Regulus triple alignment pre-dawn." }
+  ],
+  "09-19": [
+    { year: 2025, desc: "Lunar occultation of Venus — rare event." }
+  ],
+  "09-20": [
+    { year: 2025, desc: "Neptune at opposition — brightest all year." }
+  ],
+  "09-21": [
+    { year: 2025, desc: "Saturn at opposition — best viewing night." },
+    { year: 2025, desc: "Partial solar eclipse visible from Oceania." }
+  ],
+  "09-22": [
+    { year: 2025, desc: "Autumnal Equinox marks onset of fall in Northern Hemisphere." }
+  ],
+  "09-23": [
+    { year: 2025, desc: "Neptune remains prominent in early evening sky." }
+  ],
+  "09-24": [
+    { year: 2025, desc: "Moon conjunction with Mars in evening sky." },
+    { year: 2025, desc: "Moon at perihelion (closest to Sun)." }
+  ],
+  "09-25": [
+    { year: 2025, desc: "Moon at apogee (farthest from Earth)." }
+  ],
+  "09-26": [
+    { year: 2025, desc: "Daytime Sextantid meteor shower peaks—visible before sunrise." },
+    { year: 2025, desc: "Lunar occultation of Antares possible." }
+  ],
+  "09-27": [
+    { year: 2025, desc: "47 Tucanae cluster well-placed for southern observers." }
+  ],
+  "09-28": [
+    { year: 2025, desc: "Final visibility of September epsilon-Perseid shower." }
+  ],
+  "09-29": [
+    { year: 2025, desc: "Moon near First Quarter phase." }
+  ],
+  "09-30": [
+    { year: 2025, desc: "Early evening Moon sets by midnight — good for star observing." }
+  ],
+   "10-01": [
+    { year: 2025, desc: "Orionid meteor shower active (Oct 2–Nov 7)." },
+    { year: 2025, desc: "World Space Week begins today (Oct 4–10)." }
+  ],
+  "10-02": [
+    { year: 2025, desc: "Orionids continue; radiant rises after midnight." }
+  ],
+  "10-03": [
+    { year: 2025, desc: "World Space Week – global celebration of space exploration begins Oct 4." }
+  ],
+  "10-04": [
+    { year: 2025, desc: "World Space Week officially starts – theme ‘Living in Space’." } 
+  ],
+  "10-05": [
+    { year: 2025, desc: "World Space Week continues; public events worldwide." }
+  ],
+  "10-06": [
+    { year: 2025, desc: "World Space Week ongoing; outreach & educational programs." },
+    { year: 2025, desc: "Moon appears near Saturn and Neptune in early evening sky." }
+  ],
+  "10-07": [
+    { year: 2025, desc: "Draconid meteor shower begins (Oct 6–10); peak ~Oct 8." }
+  ],
+  "10-08": [
+    { year: 2025, desc: "Expected Draconid outburst with potential ZHR ≈400." }
+  ],
+  "10-09": [
+    { year: 1902, desc: "Pallas–Sirius conjunction (historical reference)." },
+    { year: 2025, desc: "Draconids activity continues post-peak." }
+  ],
+  "10-10": [
+    { year: 2025, desc: "World Space Week ends today." }
+  ],
+  "10-11": [
+    { year: 1962, desc: "Historical Pallas–Sirius closest approach reference." }
+  ],
+  "10-12": [
+    { year: 2025, desc: "Moon near Pleiades cluster in early evening." }
+  ],
+  "10-13": [
+    { year: 2025, desc: "Moon appears near bright planet Jupiter." }
+  ],
+  "10-14": [
+    { year: 2025, desc: "Hunter’s Moon (supermoon) shines near full phase." }
+  ],
+  "10-15": [
+    { year: 2025, desc: "Moon near bright star Venus in pre-dawn sky." }
+  ],
+  "10-16": [
+    { year: 2025, desc: "Mercury appears near Mars low in morning twilight." }
+  ],
+  "10-17": [
+    { year: 2025, desc: "Mercury–Mars proximity continues in dawn sky." }
+  ],
+  "10-18": [
+    { year: 2025, desc: "Orionids meteor shower activity increases tonight." }
+  ],
+  "10-19": [
+    { year: 2025, desc: "Orionid shower nearing peak intensity." }
+  ],
+  "10-20": [
+    { year: 2025, desc: "Orionid meteor shower peaks tonight (Oct 20–21). New Moon aids visibility." }
+  ],
+  "10-21": [
+    { year: 2025, desc: "Orionids meteor peak continues; up to ~20 meteors/hr." }
+  ],
+  "10-22": [
+    { year: 2025, desc: "Final Orionid activity tonight; New Moon favors dark sky." }
+  ],
+  "10-23": [
+    { year: 2025, desc: "Moon seen near Mars & Mercury in evening sky." }
+  ],
+  "10-24": [
+    { year: 2025, desc: "Mercury reaches greatest eastern elongation—all good for evening sighting." }
+  ],
+  "10-25": [
+    { year: 2025, desc: "Mercury still bright in dusk sky post-elongation." }
+  ],
+  "10-26": [
+    { year: 2025, desc: "Moon near first‑quarter phase; set after midnight." }
+  ],
+  "10-27": [
+    { year: 2025, desc: "Evening skies remain dark—good for deep‑sky viewing." }
+  ],
+  "10-28": [
+    { year: 2025, desc: "Summer constellations decline; fall skies emerge." }
+  ],
+  "10-29": [
+    { year: 2025, desc: "Deep‑sky observing favorable—Moon rising late." }
+  ],
+  "10-30": [
+    { year: 2025, desc: "Interstellar object 3I/ATLAS reaches perihelion (~1.35 AU)." } 
+  ],
+  "10-31": [
+    { year: 2025, desc: "Halloween sky: dark evening ideal for star parties." }
+  ],
+  "11-01": [
+    { year: 2025, desc: "Southern Taurids continue; fireballs possible." },
+    { year: 2025, desc: "Moon near Saturn in the evening sky." }
+  ],
+  "11-02": [
+    { year: 2025, desc: "Moon near Neptune after sunset." },
+    { year: 2025, desc: "Southern Taurids radiant visible after midnight." }
+  ],
+  "11-03": [
+    { year: 2025, desc: "Southern Taurids meteor shower activity increases." },
+    { year: 2025, desc: "Moon in waxing gibbous phase." }
+  ],
+  "11-04": [
+    { year: 2025, desc: "Southern Taurids peak tonight (~10 meteors/hr)." },
+    { year: 2025, desc: "Moon near Uranus." }
+  ],
+  "11-05": [
+    { year: 2025, desc: "Full 'Beaver Moon' (Supermoon)." },
+    { year: 2025, desc: "Moon near the Pleiades (M45) cluster." }
+  ],
+  "11-06": [
+    { year: 2025, desc: "Kappa Ursae Majorids meteor shower begins." },
+    { year: 2025, desc: "Moon near Jupiter." }
+  ],
+  "11-07": [
+    { year: 2025, desc: "Kappa Ursae Majorids peak tonight." },
+    { year: 2025, desc: "Orion constellation rises earlier in the night." }
+  ],
+  "11-08": [
+    { year: 2025, desc: "Northern Taurids begin — watch for fireballs." },
+    { year: 2025, desc: "Moon in waning gibbous phase." }
+  ],
+  "11-09": [
+    { year: 2025, desc: "Northern Taurids continue; radiant in Taurus." },
+    { year: 2025, desc: "Moon visible near Aldebaran." }
+  ],
+  "11-10": [
+    { year: 2025, desc: "Moon near Jupiter before midnight." },
+    { year: 2025, desc: "Best time to observe Uranus all month." }
+  ],
+  "11-11": [
+    { year: 2025, desc: "Jupiter begins retrograde motion." },
+    { year: 2025, desc: "Leonid meteor shower begins (~ZHR 15)." }
+  ],
+  "11-12": [
+    { year: 2025, desc: "Moon in waning crescent phase." },
+    { year: 2025, desc: "Northern Taurid meteor activity increases." }
+  ],
+  "11-13": [
+    { year: 2025, desc: "Alpha Monocerotids meteor shower begins." },
+    { year: 2025, desc: "Moon near Regulus in Leo." }
+  ],
+  "11-14": [
+    { year: 2025, desc: "Moon near Mars and Spica in the early morning sky." },
+    { year: 2025, desc: "Dark sky after midnight for deep-sky observing." }
+  ],
+  "11-15": [
+    { year: 2025, desc: "Moon visible as thin crescent before sunrise." },
+    { year: 2025, desc: "Sigma Hydrids meteor shower begins." }
+  ],
+  "11-16": [
+    { year: 2025, desc: "Leonids activity increases; radiant in Leo." },
+    { year: 2025, desc: "Moon nears New phase." }
+  ],
+  "11-17": [
+    { year: 2025, desc: "Leonids meteor shower peaks (~15 meteors/hr)." },
+    { year: 2025, desc: "New Moon — perfect dark sky conditions." }
+  ],
+  "11-18": [
+    { year: 2025, desc: "Post-peak Leonids visible before dawn." },
+    { year: 2025, desc: "Moon near Mercury in the morning." }
+  ],
+  "11-19": [
+    { year: 2025, desc: "New Moon — ideal for faint galaxy hunting." },
+    { year: 2025, desc: "Uranus at opposition — best telescope view of year." }
+  ],
+  "11-20": [
+    { year: 2025, desc: "Mars and Mercury visible low on the horizon." },
+    { year: 2025, desc: "Alpha Monocerotids activity increases." }
+  ],
+  "11-21": [
+    { year: 2025, desc: "Alpha Monocerotids peak — outbursts possible." },
+    { year: 2025, desc: "Moon in waxing crescent phase." }
+  ],
+  "11-22": [
+    { year: 2025, desc: "Sigma Hydrids meteor shower peaks." },
+    { year: 2025, desc: "Moon near Antares in Scorpius." }
+  ],
+  "11-23": [
+    { year: 2025, desc: "Moon near Saturn in early evening sky." },
+    { year: 2025, desc: "Jupiter high in the east after sunset." }
+  ],
+  "11-24": [
+    { year: 2025, desc: "Evening ideal for observing Saturn’s rings." },
+    { year: 2025, desc: "Moon near Neptune." }
+  ],
+  "11-25": [
+    { year: 2025, desc: "First Quarter Moon — best night for lunar detail." },
+    { year: 2025, desc: "Venus visible before sunrise." }
+  ],
+  "11-26": [
+    { year: 2025, desc: "Mars at aphelion — farthest from Sun." },
+    { year: 2025, desc: "Crescent Moon visible until midnight." }
+  ],
+  "11-27": [
+    { year: 2025, desc: "Moon and Saturn close together in evening sky." },
+    { year: 2025, desc: "Clear skies great for galaxy viewing in Pegasus." }
+  ],
+  "11-28": [
+    { year: 2025, desc: "November Orionids peak (~3 meteors/hr)." },
+    { year: 2025, desc: "Moon rises late — excellent for meteor spotting." }
+  ],
+  "11-29": [
+    { year: 2025, desc: "Moon near Neptune late evening." },
+    { year: 2025, desc: "Milky Way band well-positioned overhead." }
+  ],
+  "11-30": [
+    { year: 2025, desc: "Bright planets aligned before dawn: Venus, Mars, Mercury." },
+    { year: 2025, desc: "Moon in waxing gibbous approaching full." }
+  ],
+  "12-01": [
+    { year: 2025, desc: "Southern Taurids end; scattered fireballs may persist." },
+    { year: 2025, desc: "Moon near Jupiter in evening sky." }
+  ],
+  "12-02": [
+    { year: 2025, desc: "Moon near Neptune after sunset." },
+    { year: 2025, desc: "Dark skies great for deep-sky observing." }
+  ],
+  "12-03": [
+    { year: 2025, desc: "Moon near Uranus tonight." },
+    { year: 2025, desc: "Minor meteor activity from Monocerotids begins." }
+  ],
+  "12-04": [
+    { year: 2025, desc: "Full 'Cold Moon' (Supermoon) — last full moon of the year." },
+    { year: 2025, desc: "Phoenicids meteor shower peaks (Southern Hemisphere)." }
+  ],
+  "12-05": [
+    { year: 2025, desc: "Moon near Beta Tauri (Elnath) in Taurus." },
+    { year: 2025, desc: "Favorable night for bright lunar features." }
+  ],
+  "12-06": [
+    { year: 2025, desc: "Mercury at greatest western elongation — excellent pre-dawn visibility." },
+    { year: 2025, desc: "Venus rises shortly before the Sun." }
+  ],
+  "12-07": [
+    { year: 2025, desc: "Moon near Regulus in Leo before dawn." },
+    { year: 2025, desc: "Mercury still well placed for early morning viewing." }
+  ],
+  "12-08": [
+    { year: 2025, desc: "Comae Berenicids meteor shower begins (~Dec 8–25)." },
+    { year: 2025, desc: "Moon in waning gibbous phase." }
+  ],
+  "12-09": [
+    { year: 2025, desc: "Moon rises late — favorable for faint sky objects." },
+    { year: 2025, desc: "Orion high in the eastern sky after midnight." }
+  ],
+  "12-10": [
+    { year: 2025, desc: "Neptune ends retrograde motion." },
+    { year: 2025, desc: "Moon visible in the late-night sky near Leo." }
+  ],
+  "12-11": [
+    { year: 2025, desc: "Last Quarter Moon — best time for crater shadows on the Moon." },
+    { year: 2025, desc: "Large Magellanic Cloud favorably placed for southern observers." }
+  ],
+  "12-12": [
+    { year: 2025, desc: "Geminid meteor shower ramps up; one of the best of the year." },
+    { year: 2025, desc: "Moon rises after midnight — partial interference." }
+  ],
+  "12-13": [
+    { year: 2025, desc: "Geminid meteor shower peaks tonight (~120 meteors/hr)." },
+    { year: 2025, desc: "Moonlight minimal early night — ideal meteor viewing window." }
+  ],
+  "12-14": [
+    { year: 2025, desc: "Geminids still active post-peak." },
+    { year: 2025, desc: "Moon in waning crescent phase." }
+  ],
+  "12-15": [
+    { year: 2025, desc: "Venus shines brightly in pre-dawn sky." },
+    { year: 2025, desc: "Moon near Mars in early morning hours." }
+  ],
+  "12-16": [
+    { year: 2025, desc: "Comae Berenicids peak (~5 meteors/hr)." },
+    { year: 2025, desc: "Moon approaches New phase." }
+  ],
+  "12-17": [
+    { year: 2025, desc: "Ursid meteor shower begins (~Dec 17–26)." },
+    { year: 2025, desc: "Moon close to New — excellent for faint meteor streaks." }
+  ],
+  "12-18": [
+    { year: 2025, desc: "Moon, Mars, and Mercury form tight grouping in the morning sky." },
+    { year: 2025, desc: "Jupiter dominates evening skies." }
+  ],
+  "12-19": [
+    { year: 2025, desc: "New Moon — darkest skies of the month." },
+    { year: 2025, desc: "Ideal conditions for galaxy and nebula photography." }
+  ],
+  "12-20": [
+    { year: 2025, desc: "Ursids increase in activity." },
+    { year: 2025, desc: "Winter constellations dominate the night sky." }
+  ],
+  "12-21": [
+    { year: 2025, desc: "December Solstice: Winter begins in Northern Hemisphere." },
+    { year: 2025, desc: "Ursid meteor shower peaks tonight (~10 meteors/hr)." }
+  ],
+  "12-22": [
+    { year: 2025, desc: "Ursids still active post-peak." },
+    { year: 2025, desc: "Crescent Moon returns to evening sky." }
+  ],
+  "12-23": [
+    { year: 2025, desc: "Moon near Saturn in early evening." },
+    { year: 2025, desc: "Deep-sky objects in Orion are well placed for viewing." }
+  ],
+  "12-24": [
+    { year: 2025, desc: "Moon near Neptune tonight." },
+    { year: 2025, desc: "Pre-dawn sky features Mars and Mercury." }
+  ],
+  "12-25": [
+    { year: 2025, desc: "Christmas sky: Moon near Pleiades cluster." },
+    { year: 2025, desc: "Great night to stargaze with family." }
+  ],
+  "12-26": [
+    { year: 2025, desc: "Moon near Aldebaran in Taurus." },
+    { year: 2025, desc: "Post-Christmas deep sky hunting encouraged." }
+  ],
+  "12-27": [
+    { year: 2025, desc: "Moon in First Quarter phase — high contrast lunar viewing." },
+    { year: 2025, desc: "Saturn low in western sky post-sunset." }
+  ],
+  "12-28": [
+    { year: 2025, desc: "Rosette Nebula well placed for astrophotography." },
+    { year: 2025, desc: "Evening sky features Orion and Gemini constellations." }
+  ],
+  "12-29": [
+    { year: 2025, desc: "Bright Moon visible — good time for binocular observing." },
+    { year: 2025, desc: "Jupiter and Uranus high in late evening." }
+  ],
+  "12-30": [
+    { year: 2025, desc: "Moon continues waxing — visibility improves." },
+    { year: 2025, desc: "Late December ideal for winter star clusters." }
+  ],
+  "12-31": [
+    { year: 2025, desc: "New Year’s Eve: Moon near Pleiades cluster again." },
+    { year: 2025, desc: "Skywatchers close the year under Orion and Taurus." }
+  ]
+};
+
+
+// Wheel drawing
+const months = [
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+];
+const daysInMonth = [31,28,31,30,31,30,31,31,30,31,30,31];
+
+const canvas = document.getElementById('wheel');
+const ctx = canvas.getContext('2d');
+const centerX = 250, centerY = 250;
+const innerRadius = 90;
+const outerRadius = 220;
+const monthRadius = 140;
+
+function drawWheel(selectedMonth = null, selectedDate = null) {
+  ctx.clearRect(0, 0, 500, 500);
+
+  // Draw outer circle (dates)
+  for (let i = 0; i < 31; i++) {
+    let angle = (2 * Math.PI / 31) * i - Math.PI/2;
+    let nextAngle = (2 * Math.PI / 31) * (i+1) - Math.PI/2;
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY);
+    ctx.arc(centerX, centerY, outerRadius, angle, nextAngle, false);
+    ctx.closePath();
+    ctx.fillStyle = (selectedDate === i+1) ? "#ffe082" : (i % 2 === 0 ? "#2e3a6b" : "#1a223a");
+    ctx.shadowColor = (selectedDate === i+1) ? "#ffe082" : "#00eaff";
+    ctx.shadowBlur = (selectedDate === i+1) ? 24 : 8;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // Draw date text
+    let textAngle = angle + (nextAngle - angle)/2;
+    let tx = centerX + Math.cos(textAngle) * (outerRadius - 20);
+    let ty = centerY + Math.sin(textAngle) * (outerRadius - 20);
+    ctx.save();
+    ctx.translate(tx, ty);
+    ctx.rotate(textAngle + Math.PI/2);
+    ctx.font = "bold 14px Orbitron, Arial";
+    ctx.fillStyle = (selectedDate === i+1) ? "#23294a" : "#aee7ff";
+    ctx.textAlign = "center";
+    ctx.fillText(i+1, 0, 0);
+    ctx.restore();
+  }
+
+  // Draw inner circle (months)
+  for (let i = 0; i < months.length; i++) {
+    let angle = (2 * Math.PI / months.length) * i - Math.PI/2;
+    let nextAngle = (2 * Math.PI / months.length) * (i+1) - Math.PI/2;
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY);
+    ctx.arc(centerX, centerY, monthRadius, angle, nextAngle, false);
+    ctx.closePath();
+    ctx.fillStyle = (selectedMonth === i+1) ? "#00eaff" : (i % 2 === 0 ? "#3f51b5" : "#23294a");
+    ctx.globalAlpha = (selectedMonth === i+1) ? 0.85 : 0.7;
+    ctx.shadowColor = (selectedMonth === i+1) ? "#00eaff" : "#0ff";
+    ctx.shadowBlur = (selectedMonth === i+1) ? 24 : 8;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.shadowBlur = 0;
+
+    // Draw month text
+    let textAngle = angle + (nextAngle - angle)/2;
+    let tx = centerX + Math.cos(textAngle) * (monthRadius - 30);
+    let ty = centerY + Math.sin(textAngle) * (monthRadius - 30);
+    ctx.save();
+    ctx.translate(tx, ty);
+    ctx.rotate(textAngle + Math.PI/2);
+    ctx.font = "bold 16px Orbitron, Arial";
+    ctx.fillStyle = (selectedMonth === i+1) ? "#23294a" : "#aee7ff";
+    ctx.textAlign = "center";
+    ctx.fillText(months[i], 0, 0);
+    ctx.restore();
+  }
+
+  // Draw center circle outline
+  ctx.beginPath();
+  ctx.arc(centerX, centerY, innerRadius, 0, 2 * Math.PI);
+  ctx.strokeStyle = "#aee7ff";
+  ctx.lineWidth = 4;
+  ctx.shadowColor = "#00eaff";
+  ctx.shadowBlur = 12;
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+}
+
+// Populate dropdowns
+const monthSelect = document.getElementById('month-select');
+const dateSelect = document.getElementById('date-select');
+months.forEach((m, i) => {
+  let opt = document.createElement('option');
+  opt.value = i+1;
+  opt.textContent = m;
+  monthSelect.appendChild(opt);
+});
+function updateDateOptions() {
+  let month = parseInt(monthSelect.value);
+  let days = daysInMonth[month-1];
+  // Leap year for Feb (optional: always 29 for demo)
+  if(month === 2) days = 29;
+  dateSelect.innerHTML = '';
+  for(let d=1; d<=days; d++) {
+    let opt = document.createElement('option');
+    opt.value = d;
+    opt.textContent = d;
+    dateSelect.appendChild(opt);
+  }
+}
+monthSelect.addEventListener('change', () => {
+  updateDateOptions();
+  updateDisplay();
+});
+dateSelect.addEventListener('change', updateDisplay);
+
+// Initial population
+monthSelect.value = 1;
+updateDateOptions();
+
+function updateDisplay() {
+  let month = parseInt(monthSelect.value);
+  let date = parseInt(dateSelect.value);
+  drawWheel(month, date);
+  document.getElementById('selected-date').textContent = `${months[month-1]} ${date}`;
+  document.getElementById('zodiac-sign').textContent = `Zodiac: ${getZodiac(month, date)}`;
+  updateTimeline(month, date);
+}
+
+// Timeline display
+function updateTimeline(month, date) {
+  const key = (month < 10 ? "0" : "") + month + "-" + (date < 10 ? "0" : "") + date;
+  const events = astralEvents[key];
+  const eventsList = document.getElementById('events-list');
+  eventsList.innerHTML = '';
+  if (events && events.length > 0) {
+    events.forEach(ev => {
+      const div = document.createElement('div');
+      div.className = 'event';
+      div.innerHTML = `<span class="event-year">${ev.year}</span> ${ev.desc}`;
+      eventsList.appendChild(div);
+    });
+  } else {
+    eventsList.innerHTML = `<div class="no-events">No major recorded astral events for this date.</div>`;
+  }
+}
+
+// Initial draw
+updateDisplay();
+}
+</script>
+

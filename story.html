@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Altair & Vega – Star-crossed Lovers Animation</title>
+  <style>
+    body {
+      margin: 0;
+      background: radial-gradient(ellipse at center, #0a0a23 0%, #1a1a40 100%);
+      overflow: hidden;
+      height: 100vh;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    /* Starfield */
+    .starfield {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .star-dot {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.7;
+      animation: twinkle 2s infinite;
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.7; }
+      50% { opacity: 1; }
+    }
+    /* Milky Way */
+    .milky-way {
+      position: absolute;
+      top: 65%;
+      left: 50%;
+      width: 90vw;
+      height: 80px;
+      transform: translate(-50%, -50%);
+      background: repeating-linear-gradient(
+        90deg,
+        rgba(255,255,255,0.15) 0 2px,
+        transparent 2px 8px
+      );
+      border-radius: 40px;
+      box-shadow: 0 0 60px 20px #fff8, 0 0 200px 60px #b3e0ff44;
+      z-index: 1;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .milky-sparkle {
+      position: absolute;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.7);
+      opacity: 0.8;
+      animation: sparkle 3s linear infinite;
+    }
+    @keyframes sparkle {
+      0% { opacity: 0.2; transform: scale(0.7);}
+      50% { opacity: 1; transform: scale(1.2);}
+      100% { opacity: 0.2; transform: scale(0.7);}
+    }
+    /* Stars (Altair & Vega) */
+    .star {
+      position: absolute;
+      top: 75%;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #fff 60%, #f9d6ff 100%);
+      box-shadow: 0 0 30px 10px #fff, 0 0 80px 30px #f9d6ff88;
+      z-index: 2;
+      transition: left 3s cubic-bezier(.68,-0.55,.27,1.55), top 3s cubic-bezier(.68,-0.55,.27,1.55);
+    }
+    .star.altair {
+      left: 15vw;
+      background: radial-gradient(circle, #fff 60%, #aeefff 100%);
+      box-shadow: 0 0 30px 10px #fff, 0 0 80px 30px #aeefff88;
+    }
+    .star.vega {
+      left: 75vw;
+      background: radial-gradient(circle, #fff 60%, #ffd6e0 100%);
+      box-shadow: 0 0 30px 10px #fff, 0 0 80px 30px #ffd6e088;
+    }
+    .star-label {
+      position: absolute;
+      top: 60px;
+      width: 100px;
+      text-align: center;
+      font-size: 1.1em;
+      color: #ffeedd;
+      text-shadow: 0 0 8px #000, 0 0 2px #fff;
+      pointer-events: none;
+    }
+    .star.altair .star-label {
+      left: -30px;
+    }
+    .star.vega .star-label {
+      left: -30px;
+    }
+    /* Poem Overlay */
+    .poem {
+      position: absolute;
+      top: 2%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(30, 30, 60, 0.85);
+      padding: 24px 32px 18px 32px;
+      border-radius: 18px;
+      box-shadow: 0 4px 32px #0008;
+      max-width: 600px;
+      text-align: center;
+      z-index: 20;
+      font-size: 1.15em;
+      color: #ffeedd;
+      letter-spacing: 0.5px;
+      line-height: 1.6;
+      border: 1px solid #aeefff33;
+      animation: fadeIn 2s;
+    }
+    .poem-title {
+      font-size: 1.3em;
+      color: #fff;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+      text-shadow: 0 0 8px #aeefff, 0 0 2px #fff;
+    }
+    /* Story Overlay */
+    .story {
+      position: absolute;
+      top: 18%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(30, 30, 60, 0.85);
+      padding: 22px 32px;
+      border-radius: 18px;
+      box-shadow: 0 4px 32px #0008;
+      max-width: 480px;
+      text-align: center;
+      z-index: 10;
+      font-size: 1.1em;
+      animation: fadeIn 2s;
+      transition: opacity 2s;
+    }
+    .story.hide {
+      opacity: 0.3;
+      pointer-events: none;
+      transition: opacity 2s;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateX(-50%) scale(0.95);}
+      to { opacity: 1; transform: translateX(-50%) scale(1);}
+    }
+    /* Magical sparkle effect for reunion */
+    .sparkle-effect {
+      position: absolute;
+      left: 50%;
+      top: 72%;
+      pointer-events: none;
+      z-index: 30;
+      width: 0; height: 0;
+    }
+    .sparkle {
+      position: absolute;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #fff 60%, #f9d6ff 100%);
+      opacity: 0.8;
+      animation: sparklePop 1.2s linear forwards;
+    }
+    @keyframes sparklePop {
+      0% { opacity: 0; transform: scale(0.2);}
+      60% { opacity: 1; transform: scale(1.2);}
+      100% { opacity: 0; transform: scale(1.8);}
+    }
+    /* Reunion Message */
+    .reunion {
+      position: absolute;
+      top: 65%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #ffeedd;
+      font-size: 2em;
+      opacity: 0;
+      transition: opacity 2s;
+      text-shadow: 0 0 16px #fff, 0 0 32px #f9d6ff;
+      z-index: 20;
+      pointer-events: none;
+      letter-spacing: 1px;
+    }
+    .reunion.show {
+      opacity: 1;
+      animation: reunionGlow 2.5s ease-in;
+    }
+    @keyframes reunionGlow {
+      0% { text-shadow: 0 0 0 #fff, 0 0 0 #f9d6ff;}
+      100% { text-shadow: 0 0 16px #fff, 0 0 32px #f9d6ff;}
+    }
+    /* Reunion Button */
+    .reunion-btn {
+      margin-top: 60px;
+      padding: 10px 26px;
+      border-radius: 10px;
+      border: none;
+      background: linear-gradient(90deg, #aeefff 60%, #ffd6e0 100%);
+      color: #1a1a40;
+      font-weight: bold;
+      font-size: 1.1em;
+      cursor: pointer;
+      box-shadow: 0 2px 12px #0004;
+      transition: background 0.3s, color 0.3s;
+      z-index: 50;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      top: 80%;
+      outline: none;
+    }
+    .reunion-btn:hover {
+      background: linear-gradient(90deg, #ffd6e0 60%, #aeefff 100%);
+      color: #0a0a23;
+    }
+    @media (max-width: 600px) {
+      .poem, .story { max-width: 95vw; font-size: 1em; }
+      .poem-title { font-size: 1.1em; }
+      .reunion { font-size: 1.2em; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Starfield background -->
+  <div class="starfield" id="starfield"></div>
+  <!-- Poem Overlay -->
+  <div class="poem">
+    <div class="poem-title">✨ United at Last, Even for a Night ✨</div>
+    Once a year the sky stands still,<br>
+    The stars remember, the heavens thrill.<br>
+    Altair waits with patient light,<br>
+    Vega glows through velvet night.<br>
+    A bridge of magpies spans the blue,<br>
+    Where love denied still pulses true.<br>
+    Across the Milky Way they soar,<br>
+    To touch the hands they ache for more.<br>
+    No gods nor fate can stay their flight,<br>
+    For love rewrites the stars each night.<br>
+    And though the dawn may steal the day,<br>
+    Their hearts have met — come what may.<br>
+    Just one night — and yet it gleams,<br>
+    Eternal in their shared dreams.<br>
+    Altair, Vega — threads of fire,<br>
+    Woven close in love’s desire.
+  </div>
+  <!-- Milky Way with sparkles -->
+  <div class="milky-way" id="milkyway"></div>
+  <!-- Altair and Vega -->
+  <div class="star altair" id="altair">
+    <div class="star-label">Altair<br><small>Cowherd</small></div>
+  </div>
+  <div class="star vega" id="vega">
+    <div class="star-label">Vega<br><small>Weaver</small></div>
+  </div>
+  <!-- Magical Sparkle Effect -->
+  <div class="sparkle-effect" id="sparkle-effect"></div>
+  <!-- Reunion Message -->
+  <div class="reunion" id="reunion">
+    🌌 United at last, if only for a night... 🌌
+  </div>
+  <!-- Reunion Button (always visible) -->
+  <button class="reunion-btn" onclick="startReunion()">Let them reunite</button>
+  <script>
+    // Starfield generator
+    function createStarfield() {
+      const starfield = document.getElementById('starfield');
+      const numStars = 120;
+      for (let i = 0; i < numStars; i++) {
+        const star = document.createElement('div');
+        star.className = 'star-dot';
+        const size = Math.random() * 2 + 1;
+        star.style.width = `${size}px`;
+        star.style.height = `${size}px`;
+        star.style.left = `${Math.random() * 100}vw`;
+        star.style.top = `${Math.random() * 100}vh`;
+        star.style.background = `rgba(255,255,${200 + Math.floor(Math.random()*55)},${0.5 + Math.random()*0.5})`;
+        star.style.animationDuration = `${1.5 + Math.random()*2}s`;
+        starfield.appendChild(star);
+      }
+    }
+    // Milky Way sparkles
+    function createMilkyWaySparkles() {
+      const milkyway = document.getElementById('milkyway');
+      for (let i = 0; i < 30; i++) {
+        const sparkle = document.createElement('div');
+        sparkle.className = 'milky-sparkle';
+        sparkle.style.left = `${Math.random() * 100}%`;
+        sparkle.style.top = `${Math.random() * 100}%`;
+        sparkle.style.width = `${4 + Math.random() * 8}px`;
+        sparkle.style.height = sparkle.style.width;
+        sparkle.style.opacity = 0.3 + Math.random() * 0.7;
+        sparkle.style.animationDelay = `${Math.random() * 3}s`;
+        milkyway.appendChild(sparkle);
+      }
+    }
+    // Magical sparkle burst at reunion
+    function sparkleBurst() {
+      const sparkleContainer = document.getElementById('sparkle-effect');
+      sparkleContainer.innerHTML = '';
+      for (let i = 0; i < 22; i++) {
+        const sparkle = document.createElement('div');
+        sparkle.className = 'sparkle';
+        const angle = (i / 22) * 2 * Math.PI;
+        const radius = 60 + Math.random() * 30;
+        sparkle.style.left = `${Math.cos(angle) * radius}px`;
+        sparkle.style.top = `${Math.sin(angle) * radius}px`;
+        sparkle.style.background = `radial-gradient(circle, #fff 60%, #f9d6ff 100%)`;
+        sparkle.style.animationDelay = `${Math.random() * 0.5}s`;
+        sparkleContainer.appendChild(sparkle);
+      }
+      setTimeout(() => { sparkleContainer.innerHTML = ''; }, 1500);
+    }
+    // Animate reunion
+    function startReunion() {
+      // Move stars to merge just below the reunion text
+      document.getElementById('altair').style.left = '48vw';
+      document.getElementById('vega').style.left = '52vw';
+      document.getElementById('altair').style.top = '75%';
+      document.getElementById('vega').style.top = '75%';
+      document.getElementById('story').classList.add('hide');
+      setTimeout(() => {
+        sparkleBurst();
+        document.getElementById('reunion').classList.add('show');
+      }, 3200);
+    }
+    // Init
+    createStarfield();
+    createMilkyWaySparkles();
+  </script>
+</body>
+</html>
