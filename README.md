@@ -118,13 +118,15 @@ cd chronocosmos
 </div>
 
 
-  <h2>⚠️ 𝐊𝐧𝐨𝐰𝐧 𝐋𝐢𝐦𝐢𝐭𝐚𝐭𝐢𝐨𝐧𝐬</h2>
-  <ul>
-    <li>APOD fetch needs internet</li>
-    <li>Spinwheel not touch optimized yet</li>
-    <li>Heavy canvas load on low-end browsers need to reload again to view pages </li>
-    
-  </ul>
+ <h2>⚠️ 𝐊𝐧𝐨𝐰𝐧 𝐋𝐢𝐦𝐢𝐭𝐚𝐭𝐢𝐨𝐧𝐬</h2>
+<ul>
+  <li>🛰️ NASA APOD fetch requires an active internet connection.</li>
+  <li>📱 ChronoZodiac spinwheel is not fully optimized for mobile touch gestures yet.</li>
+  <li>🌠 Astral Archive currently includes events only up to July; further events for August and beyond will be added later.</li>
+  <li>🔄 On some browsers, navigation errors or blank screens (e.g., "Page Not Found") may require a manual reload to display content correctly.</li>
+  <li>🖥️ Heavy canvas or animation loads may lag slightly on low-end devices or browsers.</li>
+</ul>
+
 
   <h2>✨ 𝐅𝐮𝐭𝐮𝐫𝐞 𝐄𝐧𝐡𝐚𝐧𝐜𝐞𝐦𝐞𝐧𝐭𝐬</h2>
   <ul>
