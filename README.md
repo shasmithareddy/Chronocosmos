@@ -38,7 +38,7 @@
 
   <h1>🌌 𝐂𝐡𝐫𝐨𝐧𝐨𝐜𝐨𝐬𝐦𝐨𝐬 – 𝐄𝐱𝐩𝐥𝐨𝐫𝐞 𝐒𝐩𝐚𝐜𝐞, 𝐎𝐧𝐞 𝐃𝐚𝐭𝐞 𝐀𝐭 𝐀 𝐓𝐢𝐦𝐞!</h1>
 
-  <p><strong>🔗 𝐋𝐢𝐯𝐞 𝐖𝐞𝐛𝐬𝐢𝐭𝐞:</strong> <a href="https://yourliveurl.com">𝗵𝘁𝘁𝗽𝘀://𝘆𝗼𝘂𝗿𝗹𝗶𝘃𝗲𝘂𝗿𝗹.𝗰𝗼𝗺</a><br>
+  <p><strong>🔗 𝐋𝐢𝐯𝐞 𝐖𝐞𝐛𝐬𝐢𝐭𝐞:</strong> <a href="https://chronocosmos-smoky.vercel.app/">https://chronocosmos-smoky.vercel.app/</a><br>
   <strong>🔗 𝐆𝐢𝐭𝐇𝐮𝐛 𝐑𝐞𝐩𝐨:</strong> <a href="https://github.com/youruser/chronocosmos">𝗵𝘁𝘁𝗽𝘀://𝗴𝗶𝘁𝗵𝘂𝗯.𝗰𝗼𝗺/𝘆𝗼𝘂𝗿𝘂𝘀𝗲𝗿/𝗰𝗵𝗿𝗼𝗻𝗼𝗰𝗼𝘀𝗺𝗼𝘀</a></p>
 
   <h2>🚀 𝐅𝐞𝐚𝐭𝐮𝐫𝐞𝐬 & 𝐌𝐨𝐝𝐮𝐥𝐞𝐬</h2>
